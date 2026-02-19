@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Suryansh Daily Task Pro</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; text-align: center; padding: 50px; }
+        .container { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 350px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: #27ae60; }
+        input, select { padding: 10px; width: 80%; margin: 10px 0; border-radius: 5px; border: none; }
+        button { background: #27ae60; color: white; border: none; padding: 12px 25px; cursor: pointer; border-radius: 5px; font-weight: bold; width: 85%; }
+        button:hover { background: #2ecc71; }
+        ul { text-align: left; list-style: none; padding: 0; margin-top: 20px; }
+        li { background: #2c3e50; padding: 10px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; }
+        .priority-tag { font-size: 0.8em; padding: 2px 5px; border-radius: 3px; background: #e67e22; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📅 Daily Task</h1>
+    <input type="text" id="taskInput" placeholder="Aaj kya karna hai?">
+    <select id="priorityInput">
+        <option value="🔥 High">High Priority</option>
+        <option value="⚡ Med">Medium Priority</option>
+        <option value="☁️ Low">Low Priority</option>
+    </select>
+    <button onclick="addTask()">+ Add Task</button>
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+    // Tasks load karna jab page khule
+    document.addEventListener('DOMContentLoaded', loadTasks);
+
+    function addTask() {
+        let task = document.getElementById('taskInput').value;
+        let priority = document.getElementById('priorityInput').value;
+        if(task === "") return;
+
+        let taskObj = { task, priority };
+        saveTaskLocal(taskObj);
+        renderTask(taskObj);
+        document.getElementById('taskInput').value = "";
+    }
+
+    function renderTask(obj) {
+        let li = document.createElement('li');
+        li.innerHTML = `<span>${obj.task}</span> <span class="priority-tag">${obj.priority}</span>`;
+        document.getElementById('taskList').appendChild(li);
+    }
+
+    function saveTaskLocal(obj) {
+        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
+        tasks.push(obj);
+        localStorage.setItem('myTasks', JSON.stringify(tasks));
+    }
+
+    function loadTasks() {
+        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
+        tasks.forEach(renderTask);
+    }
+</script>
+</body>
+</html>
