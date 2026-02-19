@@ -25,7 +25,9 @@
     <h1>⚡ Task Manager Pro</h1>
 
     <input type="text" id="taskInput" placeholder="Naya task likhein...">
-    <input type="datetime-local" id="dateInput"> <button onclick="addTask()">+ Task Jodein</button>
+    <input type="datetime-local" id="dateInput">
+
+    <button onclick="addTask()">+ Task Jodein</button>
 
     <ul id="taskList"></ul>
 </div>
@@ -33,7 +35,13 @@
 <script>
     let tasks = JSON.parse(localStorage.getItem('suryanshTasks')) || [];
 
-    document.addEventListener('DOMContentLoaded', renderTasks);
+    // Page load hote hi Notification ki permission maangna
+    document.addEventListener('DOMContentLoaded', () => {
+        renderTasks();
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+    });
 
     function addTask() {
         let taskText = document.getElementById('taskInput').value;
@@ -44,7 +52,8 @@
             return;
         }
 
-        let newTask = { id: Date.now(), text: taskText, date: taskDate };
+        // 'notified: false' ka matlab abhi iska alarm nahi baja hai
+        let newTask = { id: Date.now(), text: taskText, date: taskDate, notified: false };
         tasks.push(newTask);
         saveAndRender();
 
@@ -76,11 +85,9 @@
         list.innerHTML = "";
 
         tasks.forEach(task => {
-            let li = document.createElement('li');
-
-            // Date ko sahi format mein dikhane ke liye
             let displayDate = task.date ? new Date(task.date).toLocaleString('en-IN') : "Date set nahi hai";
 
+            let li = document.createElement('li');
             li.innerHTML = `
                     <div class="task-header">
                         <span>${task.text}</span>
@@ -93,6 +100,48 @@
                 `;
             list.appendChild(li);
         });
+    }
+
+    // ==========================================
+    // ALARM SYSTEM: Har 10 second mein check karega
+    // ==========================================
+    setInterval(checkAlarms, 10000);
+
+    function checkAlarms() {
+        let now = new Date().getTime();
+        let hasUpdated = false;
+
+        tasks.forEach(task => {
+            if (task.date && !task.notified) {
+                let taskTime = new Date(task.date).getTime();
+
+                // Agar current time, task ke time ke barabar ya usse aage nikal gaya ho
+                if (now >= taskTime) {
+                    playAlarm(task.text);
+                    task.notified = true; // Mark kar do ki alarm baj chuka hai
+                    hasUpdated = true;
+                }
+            }
+        });
+
+        if (hasUpdated) {
+            localStorage.setItem('suryanshTasks', JSON.stringify(tasks));
+        }
+    }
+
+    function playAlarm(taskName) {
+        // 1. Browser Notification
+        if (Notification.permission === "granted") {
+            new Notification("⏰ Task Reminder!", {
+                body: "Time ho gaya hai: " + taskName,
+            });
+        } else {
+            alert("⏰ ALARM! Time for task: " + taskName);
+        }
+
+        // 2. Sound bajana (Tring Tring)
+        let audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        audio.play();
     }
 </script>
 </body>
