@@ -2,81 +2,128 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>Suryansh Daily Task Pro</title>
+    <title>Suryansh Pro Tasker</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f111a; color: white; text-align: center; padding: 30px; }
-        .container { background: #1e2130; padding: 25px; border-radius: 12px; max-width: 500px; margin: auto; box-shadow: 0 8px 25px rgba(0,0,0,0.8); }
-        h1 { color: #00ff88; letter-spacing: 1px; }
-        input[type="text"], input[type="datetime-local"] { padding: 12px; width: 85%; margin: 8px 0; border-radius: 6px; border: none; background: #2a2d40; color: white; }
-        button { background: #00ff88; color: black; border: none; padding: 12px 20px; cursor: pointer; border-radius: 6px; font-weight: bold; width: 90%; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #00cc6a; }
-        ul { text-align: left; list-style: none; padding: 0; }
-        li { background: #252838; padding: 15px; margin-top: 10px; border-radius: 8px; border-left: 5px solid #00ff88; display: flex; flex-direction: column; }
-        .task-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1em; }
-        .task-date { font-size: 0.8em; color: #a0a5c0; margin-top: 5px; }
-        .action-btns { margin-top: 10px; display: flex; gap: 10px; }
-        .btn-edit { background: #f39c12; color: white; padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; }
-        .btn-delete { background: #e74c3c; color: white; padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; }
+        /* Hacker Theme CSS */
+        body { font-family: 'Courier New', Courier, monospace; background: #050505; color: #00ff00; text-align: center; padding: 20px; margin: 0; }
+        .container { background: #111; padding: 25px; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #00ff00; box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); }
+        h1 { text-shadow: 0 0 10px #00ff00; letter-spacing: 2px; }
+
+        /* Stats & Gamification */
+        .stats-board { display: flex; justify-content: space-around; background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px dashed #00ff00; margin-bottom: 20px; font-size: 1.2em; font-weight: bold; }
+        .xp-text { color: #f1c40f; text-shadow: 0 0 5px #f1c40f; }
+        .streak-text { color: #e74c3c; text-shadow: 0 0 5px #e74c3c; }
+
+        /* Pomodoro Timer */
+        .timer-box { background: #0a0a0a; border: 1px solid #00ff00; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        #timeDisplay { font-size: 2.5em; font-weight: bold; display: block; margin-bottom: 10px; }
+        .timer-btn { background: transparent; color: #00ff00; border: 1px solid #00ff00; padding: 8px 15px; cursor: pointer; border-radius: 4px; transition: 0.3s; }
+        .timer-btn:hover { background: #00ff00; color: #000; }
+
+        /* Inputs */
+        input, select { padding: 12px; width: 90%; margin: 8px 0; background: #000; border: 1px solid #00ff00; color: #00ff00; border-radius: 4px; font-family: 'Courier New', monospace; outline: none; box-sizing: border-box;}
+        button.add-btn { background: #00ff00; color: #000; border: none; padding: 12px; width: 90%; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1.1em; text-transform: uppercase; margin-top: 10px; transition: 0.3s;}
+        button.add-btn:hover { box-shadow: 0 0 15px #00ff00; }
+
+        /* Task List */
+        ul { list-style: none; padding: 0; text-align: left; }
+        li { background: #111; padding: 15px; margin-top: 12px; border: 1px solid #333; border-left: 5px solid #00ff00; display: flex; flex-direction: column; transition: 0.3s; }
+        li.completed { opacity: 0.5; text-decoration: line-through; border-left: 5px solid #555; }
+        .task-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1em; }
+        .task-cat { font-size: 0.75em; background: #00ff00; color: #000; padding: 2px 6px; border-radius: 3px; font-weight: bold; }
+        .task-date { font-size: 0.8em; color: #888; margin-top: 5px; }
+        .check-btn { background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        .check-btn:hover { background: #00ff00; color: #000; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>⚡ Task Manager Pro</h1>
+    <h1>[ SYSTEM_ONLINE ]</h1>
 
-    <input type="text" id="taskInput" placeholder="Naya task likhein...">
+    <div class="stats-board">
+        <div>XP: <span id="xpCount" class="xp-text">0</span></div>
+        <div>STREAK: <span id="streakCount" class="streak-text">🔥 0</span></div>
+    </div>
+
+    <div class="timer-box">
+        <span id="timeDisplay">25:00</span>
+        <button class="timer-btn" onclick="startTimer()">▶ Start Focus</button>
+        <button class="timer-btn" onclick="resetTimer()">⏹ Reset</button>
+    </div>
+
+    <input type="text" id="taskInput" placeholder="> Enter new mission...">
+
+    <select id="categoryInput">
+        <option value="💡 Idea / Script">💡 Idea / Script</option>
+        <option value="🎥 Vlog Shoot">🎥 Vlog Shoot</option>
+        <option value="🎬 DaVinci Edit">🎬 DaVinci Edit</option>
+        <option value="☕ Java Code">☕ Java Code</option>
+        <option value="⚡ General">⚡ General</option>
+    </select>
+
     <input type="datetime-local" id="dateInput">
 
-    <button onclick="addTask()">+ Task Jodein</button>
+    <button class="add-btn" onclick="addTask()">Deploy Task</button>
 
     <ul id="taskList"></ul>
 </div>
 
 <script>
-    let tasks = JSON.parse(localStorage.getItem('suryanshTasks')) || [];
+    // --- GAMIFICATION LOGIC ---
+    let xp = parseInt(localStorage.getItem('hackerXP')) || 0;
+    let streak = parseInt(localStorage.getItem('hackerStreak')) || 0;
+    let lastLogin = localStorage.getItem('lastLoginDate');
 
-    // Page load hote hi Notification ki permission maangna
-    document.addEventListener('DOMContentLoaded', () => {
-        renderTasks();
-        if (Notification.permission !== "granted") {
-            Notification.requestPermission();
+    let today = new Date().toDateString();
+    if(lastLogin !== today) {
+        if(lastLogin === new Date(Date.now() - 86400000).toDateString()) {
+            streak++; // Logged in consecutive day
+        } else if (lastLogin !== null) {
+            streak = 0; // Streak broken
         }
-    });
+        localStorage.setItem('lastLoginDate', today);
+        localStorage.setItem('hackerStreak', streak);
+    }
+
+    document.getElementById('xpCount').innerText = xp;
+    document.getElementById('streakCount').innerText = "🔥 " + streak;
+
+    function addXP() {
+        xp += 10;
+        localStorage.setItem('hackerXP', xp);
+        document.getElementById('xpCount').innerText = xp;
+    }
+
+    // --- TASK MANAGER LOGIC ---
+    let tasks = JSON.parse(localStorage.getItem('hackerTasks')) || [];
+    document.addEventListener('DOMContentLoaded', renderTasks);
 
     function addTask() {
-        let taskText = document.getElementById('taskInput').value;
-        let taskDate = document.getElementById('dateInput').value;
+        let text = document.getElementById('taskInput').value;
+        let cat = document.getElementById('categoryInput').value;
+        let date = document.getElementById('dateInput').value;
 
-        if(taskText === "") {
-            alert("Task khali nahi ho sakta!");
-            return;
-        }
+        if(text === "") return alert("Mission details required!");
 
-        // 'notified: false' ka matlab abhi iska alarm nahi baja hai
-        let newTask = { id: Date.now(), text: taskText, date: taskDate, notified: false };
-        tasks.push(newTask);
+        tasks.push({ id: Date.now(), text, cat, date, done: false });
         saveAndRender();
 
         document.getElementById('taskInput').value = "";
         document.getElementById('dateInput').value = "";
     }
 
-    function deleteTask(id) {
-        tasks = tasks.filter(t => t.id !== id);
-        saveAndRender();
-    }
-
-    function editTask(id) {
-        let newTaskText = prompt("Task ko update karein:");
-        if (newTaskText) {
-            let taskIndex = tasks.findIndex(t => t.id === id);
-            tasks[taskIndex].text = newTaskText;
+    function completeTask(id) {
+        let task = tasks.find(t => t.id === id);
+        if(!task.done) {
+            task.done = true;
+            addXP(); // Add XP only when completing
             saveAndRender();
         }
     }
 
     function saveAndRender() {
-        localStorage.setItem('suryanshTasks', JSON.stringify(tasks));
+        localStorage.setItem('hackerTasks', JSON.stringify(tasks));
         renderTasks();
     }
 
@@ -85,63 +132,51 @@
         list.innerHTML = "";
 
         tasks.forEach(task => {
-            let displayDate = task.date ? new Date(task.date).toLocaleString('en-IN') : "Date set nahi hai";
-
             let li = document.createElement('li');
+            if(task.done) li.className = "completed";
+
+            let displayDate = task.date ? new Date(task.date).toLocaleString('en-IN') : "No deadline";
+
             li.innerHTML = `
                     <div class="task-header">
-                        <span>${task.text}</span>
+                        <span>${task.text} <span class="task-cat">${task.cat}</span></span>
+                        ${!task.done ? `<button class="check-btn" onclick="completeTask(${task.id})">✔ DONE</button>` : '<span>✅</span>'}
                     </div>
                     <div class="task-date">🕒 Due: ${displayDate}</div>
-                    <div class="action-btns">
-                        <button class="btn-edit" onclick="editTask(${task.id})">Edit</button>
-                        <button class="btn-delete" onclick="deleteTask(${task.id})">Delete</button>
-                    </div>
                 `;
             list.appendChild(li);
         });
     }
 
-    // ==========================================
-    // ALARM SYSTEM: Har 10 second mein check karega
-    // ==========================================
-    setInterval(checkAlarms, 10000);
+    // --- POMODORO TIMER LOGIC ---
+    let timerInterval;
+    let timeLeft = 1500; // 25 minutes in seconds
 
-    function checkAlarms() {
-        let now = new Date().getTime();
-        let hasUpdated = false;
-
-        tasks.forEach(task => {
-            if (task.date && !task.notified) {
-                let taskTime = new Date(task.date).getTime();
-
-                // Agar current time, task ke time ke barabar ya usse aage nikal gaya ho
-                if (now >= taskTime) {
-                    playAlarm(task.text);
-                    task.notified = true; // Mark kar do ki alarm baj chuka hai
-                    hasUpdated = true;
-                }
-            }
-        });
-
-        if (hasUpdated) {
-            localStorage.setItem('suryanshTasks', JSON.stringify(tasks));
-        }
+    function updateTimerDisplay() {
+        let m = Math.floor(timeLeft / 60);
+        let s = timeLeft % 60;
+        document.getElementById('timeDisplay').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
     }
 
-    function playAlarm(taskName) {
-        // 1. Browser Notification
-        if (Notification.permission === "granted") {
-            new Notification("⏰ Task Reminder!", {
-                body: "Time ho gaya hai: " + taskName,
-            });
-        } else {
-            alert("⏰ ALARM! Time for task: " + taskName);
-        }
+    function startTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if(timeLeft > 0) {
+                timeLeft--;
+                updateTimerDisplay();
+            } else {
+                clearInterval(timerInterval);
+                alert("Focus Session Complete! Take a 5 min break.");
+                let audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                audio.play();
+            }
+        }, 1000);
+    }
 
-        // 2. Sound bajana (Tring Tring)
-        let audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-        audio.play();
+    function resetTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 1500;
+        updateTimerDisplay();
     }
 </script>
 </body>
