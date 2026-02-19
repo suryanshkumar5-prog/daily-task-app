@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00ff00">
     <meta charset="UTF-8">
     <title>Suryansh OS</title>
     <style>
@@ -238,6 +240,11 @@
         clearInterval(timerInterval);
         isTimerRunning = false;
         document.getElementById('timeDisplay').innerText = "00:00";
+    }
+</script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(() => console.log("Suryansh OS App Ready!"));
     }
 </script>
 </body>
