@@ -4,61 +4,95 @@
     <meta charset="UTF-8">
     <title>Suryansh Daily Task Pro</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; text-align: center; padding: 50px; }
-        .container { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 350px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #27ae60; }
-        input, select { padding: 10px; width: 80%; margin: 10px 0; border-radius: 5px; border: none; }
-        button { background: #27ae60; color: white; border: none; padding: 12px 25px; cursor: pointer; border-radius: 5px; font-weight: bold; width: 85%; }
-        button:hover { background: #2ecc71; }
-        ul { text-align: left; list-style: none; padding: 0; margin-top: 20px; }
-        li { background: #2c3e50; padding: 10px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; }
-        .priority-tag { font-size: 0.8em; padding: 2px 5px; border-radius: 3px; background: #e67e22; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f111a; color: white; text-align: center; padding: 30px; }
+        .container { background: #1e2130; padding: 25px; border-radius: 12px; max-width: 500px; margin: auto; box-shadow: 0 8px 25px rgba(0,0,0,0.8); }
+        h1 { color: #00ff88; letter-spacing: 1px; }
+        input[type="text"], input[type="datetime-local"] { padding: 12px; width: 85%; margin: 8px 0; border-radius: 6px; border: none; background: #2a2d40; color: white; }
+        button { background: #00ff88; color: black; border: none; padding: 12px 20px; cursor: pointer; border-radius: 6px; font-weight: bold; width: 90%; margin-top: 10px; transition: 0.3s; }
+        button:hover { background: #00cc6a; }
+        ul { text-align: left; list-style: none; padding: 0; }
+        li { background: #252838; padding: 15px; margin-top: 10px; border-radius: 8px; border-left: 5px solid #00ff88; display: flex; flex-direction: column; }
+        .task-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1em; }
+        .task-date { font-size: 0.8em; color: #a0a5c0; margin-top: 5px; }
+        .action-btns { margin-top: 10px; display: flex; gap: 10px; }
+        .btn-edit { background: #f39c12; color: white; padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; }
+        .btn-delete { background: #e74c3c; color: white; padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>📅 Daily Task</h1>
-    <input type="text" id="taskInput" placeholder="Aaj kya karna hai?">
-    <select id="priorityInput">
-        <option value="🔥 High">High Priority</option>
-        <option value="⚡ Med">Medium Priority</option>
-        <option value="☁️ Low">Low Priority</option>
-    </select>
-    <button onclick="addTask()">+ Add Task</button>
+    <h1>⚡ Task Manager Pro</h1>
+
+    <input type="text" id="taskInput" placeholder="Naya task likhein...">
+    <input type="datetime-local" id="dateInput"> <button onclick="addTask()">+ Task Jodein</button>
+
     <ul id="taskList"></ul>
 </div>
 
 <script>
-    // Tasks load karna jab page khule
-    document.addEventListener('DOMContentLoaded', loadTasks);
+    let tasks = JSON.parse(localStorage.getItem('suryanshTasks')) || [];
+
+    document.addEventListener('DOMContentLoaded', renderTasks);
 
     function addTask() {
-        let task = document.getElementById('taskInput').value;
-        let priority = document.getElementById('priorityInput').value;
-        if(task === "") return;
+        let taskText = document.getElementById('taskInput').value;
+        let taskDate = document.getElementById('dateInput').value;
 
-        let taskObj = { task, priority };
-        saveTaskLocal(taskObj);
-        renderTask(taskObj);
+        if(taskText === "") {
+            alert("Task khali nahi ho sakta!");
+            return;
+        }
+
+        let newTask = { id: Date.now(), text: taskText, date: taskDate };
+        tasks.push(newTask);
+        saveAndRender();
+
         document.getElementById('taskInput').value = "";
+        document.getElementById('dateInput').value = "";
     }
 
-    function renderTask(obj) {
-        let li = document.createElement('li');
-        li.innerHTML = `<span>${obj.task}</span> <span class="priority-tag">${obj.priority}</span>`;
-        document.getElementById('taskList').appendChild(li);
+    function deleteTask(id) {
+        tasks = tasks.filter(t => t.id !== id);
+        saveAndRender();
     }
 
-    function saveTaskLocal(obj) {
-        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
-        tasks.push(obj);
-        localStorage.setItem('myTasks', JSON.stringify(tasks));
+    function editTask(id) {
+        let newTaskText = prompt("Task ko update karein:");
+        if (newTaskText) {
+            let taskIndex = tasks.findIndex(t => t.id === id);
+            tasks[taskIndex].text = newTaskText;
+            saveAndRender();
+        }
     }
 
-    function loadTasks() {
-        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
-        tasks.forEach(renderTask);
+    function saveAndRender() {
+        localStorage.setItem('suryanshTasks', JSON.stringify(tasks));
+        renderTasks();
+    }
+
+    function renderTasks() {
+        let list = document.getElementById('taskList');
+        list.innerHTML = "";
+
+        tasks.forEach(task => {
+            let li = document.createElement('li');
+
+            // Date ko sahi format mein dikhane ke liye
+            let displayDate = task.date ? new Date(task.date).toLocaleString('en-IN') : "Date set nahi hai";
+
+            li.innerHTML = `
+                    <div class="task-header">
+                        <span>${task.text}</span>
+                    </div>
+                    <div class="task-date">🕒 Due: ${displayDate}</div>
+                    <div class="action-btns">
+                        <button class="btn-edit" onclick="editTask(${task.id})">Edit</button>
+                        <button class="btn-delete" onclick="deleteTask(${task.id})">Delete</button>
+                    </div>
+                `;
+            list.appendChild(li);
+        });
     }
 </script>
 </body>
