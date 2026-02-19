@@ -2,215 +2,242 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>Suryansh Pro Tasker</title>
+    <title>Suryansh OS</title>
     <style>
         body { font-family: 'Courier New', Courier, monospace; background: #050505; color: #00ff00; text-align: center; padding: 20px; margin: 0; }
         .container { background: #111; padding: 25px; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #00ff00; box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); }
         h1 { text-shadow: 0 0 10px #00ff00; letter-spacing: 2px; }
 
-        /* Stats & Gamification */
-        .stats-board { display: flex; justify-content: space-around; background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px dashed #00ff00; margin-bottom: 20px; font-size: 1.2em; font-weight: bold; }
+        .stats-board { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px dashed #00ff00; margin-bottom: 20px; font-weight: bold; font-size: 1.2em; }
         .xp-text { color: #f1c40f; text-shadow: 0 0 5px #f1c40f; }
-        .streak-text { color: #e74c3c; text-shadow: 0 0 5px #e74c3c; }
 
-        /* Pomodoro Timer */
         .timer-box { background: #1a0000; border: 1px solid #ff0000; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         #timeDisplay { font-size: 2.5em; font-weight: bold; display: block; margin-bottom: 10px; color: #ff4444; }
-        .timer-btn { background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 8px 15px; cursor: pointer; border-radius: 4px; transition: 0.3s; margin: 5px; }
+        .timer-btn { background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin: 5px; }
         .timer-btn:hover { background: #ff4444; color: #000; }
-        #customMinutes { width: 80px; text-align: center; font-size: 1.2em; margin-bottom: 10px; padding: 8px; background: #000; border: 1px solid #ff4444; color: #ff4444; border-radius: 4px; outline: none; }
-        .warning-text { color: #ffaa00; font-size: 0.8em; margin-top: 10px; display: block; }
 
-        /* Inputs & Buttons */
-        input[type="text"], input[type="datetime-local"], select, textarea { padding: 12px; width: 90%; margin: 8px 0; background: #000; border: 1px solid #00ff00; color: #00ff00; border-radius: 4px; font-family: 'Courier New', monospace; outline: none; box-sizing: border-box;}
+        input, textarea { padding: 12px; width: 90%; margin: 8px 0; background: #000; border: 1px solid #00ff00; color: #00ff00; border-radius: 4px; outline: none; box-sizing: border-box; }
         button.add-btn { background: #00ff00; color: #000; border: none; padding: 12px; width: 90%; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1.1em; text-transform: uppercase; margin-top: 10px; transition: 0.3s;}
         button.add-btn:hover { box-shadow: 0 0 15px #00ff00; }
 
-        /* Task & Idea Lists */
         ul { list-style: none; padding: 0; text-align: left; }
-        li { background: #111; padding: 15px; margin-top: 12px; border: 1px solid #333; border-left: 5px solid #00ff00; display: flex; flex-direction: column; transition: 0.3s; }
-        li.completed { opacity: 0.5; text-decoration: line-through; border-left: 5px solid #555; }
-        .task-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1em; }
+        li { background: #111; padding: 15px; margin-top: 10px; border: 1px solid #333; border-left: 5px solid #00ff00; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Idea Vault Section */
-        .vault-section { margin-top: 40px; padding-top: 20px; border-top: 2px dashed #00ff00; }
-        .idea-item { border-left: 5px solid #9b59b6; }
-        .delete-btn { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; padding: 2px 8px; cursor: pointer; font-size: 0.8em; }
+        .login-box { margin-top: 100px; padding: 40px; }
+        #loginBtn { background: #4285F4; color: white; border: none; padding: 15px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; font-weight: bold; box-shadow: 0 4px 10px rgba(66, 133, 244, 0.4); }
+        #userInfo { font-size: 0.9em; color: #aaa; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        #logoutBtn { background: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>[ SYSTEM_ONLINE ]</h1>
+<div id="loginScreen" class="container login-box">
+    <h1>[ SYSTEM_LOCKED ]</h1>
+    <p style="color: #888; margin-bottom: 30px;">Access restricted. Identity verification required.</p>
+    <button id="loginBtn">🛡️ Login with Google</button>
+</div>
+
+<div id="appScreen" class="container" style="display: none;">
+    <h1>[ SURYANSH_OS_ONLINE ]</h1>
+
+    <div id="userInfo">
+        <span>Agent: <b id="userName" style="color:#00ff00;"></b></span>
+        <button id="logoutBtn">Logout</button>
+    </div>
 
     <div class="stats-board">
-        <div>XP: <span id="xpCount" class="xp-text">0</span></div>
-        <div>STREAK: <span id="streakCount" class="streak-text">🔥 0</span></div>
+        <div>TOTAL XP: <span id="xpCount" class="xp-text">0</span></div>
     </div>
 
     <div class="timer-box">
-        <input type="number" id="customMinutes" placeholder="Min">
+        <input type="number" id="customMinutes" placeholder="Minutes..." style="width: 120px; text-align: center; font-size: 1.2em;">
         <span id="timeDisplay">00:00</span>
-        <button class="timer-btn" onclick="startTimer()">▶ Start Focus</button>
-        <button class="timer-btn" onclick="resetTimer()">⏹ Reset</button>
-        <span class="warning-text">⚠️ WARNING: Tab change kiya toh 50 XP kategi!</span>
+        <button class="timer-btn" id="startTimerBtn">▶ Start Focus</button>
+        <button class="timer-btn" id="resetTimerBtn">⏹ Reset</button>
+        <div style="color: #ffaa00; font-size: 0.8em; margin-top: 10px;">⚠️ WARNING: Tab changed = 50 XP Penalty!</div>
     </div>
 
-    <input type="text" id="taskInput" placeholder="> Enter new mission...">
-    <input type="datetime-local" id="dateInput">
-    <button class="add-btn" onclick="addTask()">Deploy Task</button>
+    <input type="text" id="taskInput" placeholder="> Enter new mission objective...">
+    <button class="add-btn" id="addTaskBtn">Deploy Task</button>
     <ul id="taskList"></ul>
 
-    <div class="vault-section">
+    <div style="margin-top: 40px; border-top: 2px dashed #00ff00; padding-top: 20px;">
         <h2>🧠 IDEA VAULT</h2>
-        <textarea id="ideaInput" rows="3" placeholder="> Dump crazy experiment & vlog ideas here..."></textarea>
-        <button class="add-btn" style="background: #9b59b6; color: white;" onclick="addIdea()">Save Idea</button>
+        <textarea id="ideaInput" rows="2" placeholder="> Dump crazy experiments & vlog ideas..."></textarea>
+        <button class="add-btn" id="addIdeaBtn" style="background: #9b59b6; color: white;">Save Idea to Cloud</button>
         <ul id="ideaList"></ul>
     </div>
 </div>
 
-<script>
-    // --- GAMIFICATION & XP LOGIC ---
-    let xp = parseInt(localStorage.getItem('hackerXP')) || 0;
-    let streak = parseInt(localStorage.getItem('hackerStreak')) || 0;
+<script type="module">
+    // 1. Firebase Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    document.getElementById('xpCount').innerText = xp;
-    document.getElementById('streakCount').innerText = "🔥 " + streak;
+    // 2. Tere Firebase API Keys
+    const firebaseConfig = {
+        apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc",
+        authDomain: "suryansh-pro-tasker.firebaseapp.com",
+        projectId: "suryansh-pro-tasker",
+        storageBucket: "suryansh-pro-tasker.firebasestorage.app",
+        messagingSenderId: "264919463662",
+        appId: "1:264919463662:web:52fbe3e64000827ba065ff",
+        measurementId: "G-R49FNEDK6M"
+    };
 
-    function updateXP(amount) {
-        xp += amount;
-        if (xp < 0) xp = 0; // XP 0 se kam nahi ho sakti
-        localStorage.setItem('hackerXP', xp);
-        document.getElementById('xpCount').innerText = xp;
+    // 3. System On Karna
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    let currentUser = null;
+    let userXP = 0;
+
+    // --- AUTHENTICATION (LOGIN/LOGOUT) ---
+    document.getElementById('loginBtn').addEventListener('click', () => {
+        signInWithPopup(auth, provider).catch(error => alert("Login Error: " + error.message));
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        signOut(auth);
+    });
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('loginScreen').style.display = "none";
+            document.getElementById('appScreen').style.display = "block";
+            document.getElementById('userName').innerText = user.displayName;
+            loadCloudData(); // Jab login ho jaye, data mangwao
+        } else {
+            currentUser = null;
+            document.getElementById('loginScreen').style.display = "block";
+            document.getElementById('appScreen').style.display = "none";
+        }
+    });
+
+    // --- CLOUD DATABASE LOGIC ---
+    function loadCloudData() {
+        // Tasks load karna
+        const q = query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc"));
+        onSnapshot(q, (snapshot) => {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = "";
+            snapshot.forEach((docSnap) => {
+                let task = docSnap.data();
+                let li = document.createElement('li');
+                li.innerHTML = `
+                        <span>${task.text}</span>
+                        <button onclick="completeTask('${docSnap.id}')" style="background:#00ff00; color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold; border-radius:3px;">✔ DONE</button>
+                    `;
+                taskList.appendChild(li);
+            });
+        });
+
+        // Ideas load karna
+        onSnapshot(collection(db, "users", currentUser.uid, "ideas"), (snapshot) => {
+            const ideaList = document.getElementById('ideaList');
+            ideaList.innerHTML = "";
+            snapshot.forEach((docSnap) => {
+                let idea = docSnap.data();
+                let li = document.createElement('li');
+                li.style.borderLeft = "5px solid #9b59b6";
+                li.innerHTML = `
+                        <span>${idea.text}</span>
+                        <button onclick="deleteIdea('${docSnap.id}')" style="background:#e74c3c; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:3px;">X</button>
+                    `;
+                ideaList.appendChild(li);
+            });
+        });
+
+        // XP load karna
+        let savedXP = localStorage.getItem('suryanshXP_' + currentUser.uid);
+        userXP = savedXP ? parseInt(savedXP) : 0;
+        document.getElementById('xpCount').innerText = userXP;
     }
 
-    // --- STRICT FOCUS PENALTY (THE KILLER FEATURE) ---
+    // Add Task to Firebase
+    document.getElementById('addTaskBtn').addEventListener('click', async () => {
+        const text = document.getElementById('taskInput').value;
+        if (!text || !currentUser) return;
+
+        await addDoc(collection(db, "users", currentUser.uid, "tasks"), {
+            text: text,
+            createdAt: serverTimestamp()
+        });
+        document.getElementById('taskInput').value = "";
+    });
+
+    // Add Idea to Firebase
+    document.getElementById('addIdeaBtn').addEventListener('click', async () => {
+        const text = document.getElementById('ideaInput').value;
+        if (!text || !currentUser) return;
+
+        await addDoc(collection(db, "users", currentUser.uid, "ideas"), { text: text });
+        document.getElementById('ideaInput').value = "";
+    });
+
+    // Complete & Delete Functions (Global)
+    window.completeTask = async (taskId) => {
+        updateXP(10); // Task done = 10 XP
+        await deleteDoc(doc(db, "users", currentUser.uid, "tasks", taskId));
+    };
+
+    window.deleteIdea = async (ideaId) => {
+        await deleteDoc(doc(db, "users", currentUser.uid, "ideas", ideaId));
+    };
+
+    // --- XP & PENALTY LOGIC ---
+    function updateXP(amount) {
+        userXP += amount;
+        if (userXP < 0) userXP = 0;
+        localStorage.setItem('suryanshXP_' + currentUser.uid, userXP);
+        document.getElementById('xpCount').innerText = userXP;
+    }
+
+    let timerInterval;
+    let timeLeft = 0;
     let isTimerRunning = false;
 
     document.addEventListener("visibilitychange", function() {
         if (document.hidden && isTimerRunning) {
-            // User ne tab change kiya!
             alert("🚨 PENALTY! Focus ke waqt tab change kyu kiya? -50 XP!");
-            updateXP(-50); // 50 XP kaat lo
-            resetTimer(); // Timer rok do
+            updateXP(-50);
+            resetMyTimer();
         }
     });
 
-    // --- TIMER LOGIC ---
-    let timerInterval;
-    let timeLeft = 0;
-
-    function updateTimerDisplay() {
-        let m = Math.floor(timeLeft / 60);
-        let s = timeLeft % 60;
-        document.getElementById('timeDisplay').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
-    }
-
-    function startTimer() {
-        let userMinutes = parseInt(document.getElementById('customMinutes').value);
-        if(isNaN(userMinutes) || userMinutes <= 0) return alert("Sahi time daal!");
+    document.getElementById('startTimerBtn').addEventListener('click', () => {
+        let mins = parseInt(document.getElementById('customMinutes').value);
+        if(isNaN(mins) || mins <= 0) return alert("Sahi time daal!");
 
         clearInterval(timerInterval);
-        timeLeft = userMinutes * 60;
-        updateTimerDisplay();
-        isTimerRunning = true; // Timer shuru ho gaya
+        timeLeft = mins * 60;
+        isTimerRunning = true;
 
         timerInterval = setInterval(() => {
             if(timeLeft > 0) {
                 timeLeft--;
-                updateTimerDisplay();
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                document.getElementById('timeDisplay').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
             } else {
                 clearInterval(timerInterval);
-                isTimerRunning = false; // Timer khatam
+                isTimerRunning = false;
                 alert("Focus Complete! +20 XP mil gaye!");
-                updateXP(20); // Focus complete karne par extra XP
-                let audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-                audio.play();
+                updateXP(20);
             }
         }, 1000);
-    }
+    });
 
-    function resetTimer() {
+    document.getElementById('resetTimerBtn').addEventListener('click', resetMyTimer);
+
+    function resetMyTimer() {
         clearInterval(timerInterval);
         isTimerRunning = false;
         document.getElementById('timeDisplay').innerText = "00:00";
-        document.getElementById('customMinutes').value = "";
-    }
-
-    // --- TASK MANAGER ---
-    let tasks = JSON.parse(localStorage.getItem('hackerTasks')) || [];
-    document.addEventListener('DOMContentLoaded', renderTasks);
-
-    function addTask() {
-        let text = document.getElementById('taskInput').value;
-        let date = document.getElementById('dateInput').value;
-        if(text === "") return;
-
-        tasks.push({ id: Date.now(), text, date, done: false });
-        localStorage.setItem('hackerTasks', JSON.stringify(tasks));
-        document.getElementById('taskInput').value = "";
-        renderTasks();
-    }
-
-    function completeTask(id) {
-        let task = tasks.find(t => t.id === id);
-        if(!task.done) {
-            task.done = true;
-            updateXP(10); // Task done par 10 XP
-            localStorage.setItem('hackerTasks', JSON.stringify(tasks));
-            renderTasks();
-        }
-    }
-
-    function renderTasks() {
-        let list = document.getElementById('taskList');
-        list.innerHTML = "";
-        tasks.forEach(task => {
-            let li = document.createElement('li');
-            if(task.done) li.className = "completed";
-            li.innerHTML = `
-                    <div class="task-header">
-                        <span>${task.text}</span>
-                        ${!task.done ? `<button class="check-btn" onclick="completeTask(${task.id})">✔ DONE</button>` : '<span>✅</span>'}
-                    </div>
-                `;
-            list.appendChild(li);
-        });
-    }
-
-    // --- IDEA VAULT LOGIC ---
-    let ideas = JSON.parse(localStorage.getItem('hackerIdeas')) || [];
-    document.addEventListener('DOMContentLoaded', renderIdeas);
-
-    function addIdea() {
-        let text = document.getElementById('ideaInput').value;
-        if(text === "") return;
-        ideas.push({ id: Date.now(), text });
-        localStorage.setItem('hackerIdeas', JSON.stringify(ideas));
-        document.getElementById('ideaInput').value = "";
-        renderIdeas();
-    }
-
-    function deleteIdea(id) {
-        ideas = ideas.filter(i => i.id !== id);
-        localStorage.setItem('hackerIdeas', JSON.stringify(ideas));
-        renderIdeas();
-    }
-
-    function renderIdeas() {
-        let list = document.getElementById('ideaList');
-        list.innerHTML = "";
-        ideas.forEach(idea => {
-            let li = document.createElement('li');
-            li.className = "idea-item";
-            li.innerHTML = `
-                    <div class="task-header">
-                        <span>${idea.text}</span>
-                        <button class="delete-btn" onclick="deleteIdea(${idea.id})">X</button>
-                    </div>
-                `;
-            list.appendChild(li);
-        });
     }
 </script>
 </body>
