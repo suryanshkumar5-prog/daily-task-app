@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Suryansh Pro Tasker</title>
     <style>
-        /* Hacker Theme CSS */
         body { font-family: 'Courier New', Courier, monospace; background: #050505; color: #00ff00; text-align: center; padding: 20px; margin: 0; }
         .container { background: #111; padding: 25px; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #00ff00; box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); }
         h1 { text-shadow: 0 0 10px #00ff00; letter-spacing: 2px; }
@@ -15,25 +14,28 @@
         .streak-text { color: #e74c3c; text-shadow: 0 0 5px #e74c3c; }
 
         /* Pomodoro Timer */
-        .timer-box { background: #0a0a0a; border: 1px solid #00ff00; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        #timeDisplay { font-size: 2.5em; font-weight: bold; display: block; margin-bottom: 10px; }
-        .timer-btn { background: transparent; color: #00ff00; border: 1px solid #00ff00; padding: 8px 15px; cursor: pointer; border-radius: 4px; transition: 0.3s; }
-        .timer-btn:hover { background: #00ff00; color: #000; }
+        .timer-box { background: #1a0000; border: 1px solid #ff0000; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        #timeDisplay { font-size: 2.5em; font-weight: bold; display: block; margin-bottom: 10px; color: #ff4444; }
+        .timer-btn { background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 8px 15px; cursor: pointer; border-radius: 4px; transition: 0.3s; margin: 5px; }
+        .timer-btn:hover { background: #ff4444; color: #000; }
+        #customMinutes { width: 80px; text-align: center; font-size: 1.2em; margin-bottom: 10px; padding: 8px; background: #000; border: 1px solid #ff4444; color: #ff4444; border-radius: 4px; outline: none; }
+        .warning-text { color: #ffaa00; font-size: 0.8em; margin-top: 10px; display: block; }
 
-        /* Inputs */
-        input, select { padding: 12px; width: 90%; margin: 8px 0; background: #000; border: 1px solid #00ff00; color: #00ff00; border-radius: 4px; font-family: 'Courier New', monospace; outline: none; box-sizing: border-box;}
+        /* Inputs & Buttons */
+        input[type="text"], input[type="datetime-local"], select, textarea { padding: 12px; width: 90%; margin: 8px 0; background: #000; border: 1px solid #00ff00; color: #00ff00; border-radius: 4px; font-family: 'Courier New', monospace; outline: none; box-sizing: border-box;}
         button.add-btn { background: #00ff00; color: #000; border: none; padding: 12px; width: 90%; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1.1em; text-transform: uppercase; margin-top: 10px; transition: 0.3s;}
         button.add-btn:hover { box-shadow: 0 0 15px #00ff00; }
 
-        /* Task List */
+        /* Task & Idea Lists */
         ul { list-style: none; padding: 0; text-align: left; }
         li { background: #111; padding: 15px; margin-top: 12px; border: 1px solid #333; border-left: 5px solid #00ff00; display: flex; flex-direction: column; transition: 0.3s; }
         li.completed { opacity: 0.5; text-decoration: line-through; border-left: 5px solid #555; }
         .task-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1em; }
-        .task-cat { font-size: 0.75em; background: #00ff00; color: #000; padding: 2px 6px; border-radius: 3px; font-weight: bold; }
-        .task-date { font-size: 0.8em; color: #888; margin-top: 5px; }
-        .check-btn { background: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
-        .check-btn:hover { background: #00ff00; color: #000; }
+
+        /* Idea Vault Section */
+        .vault-section { margin-top: 40px; padding-top: 20px; border-top: 2px dashed #00ff00; }
+        .idea-item { border-left: 5px solid #9b59b6; }
+        .delete-btn { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; padding: 2px 8px; cursor: pointer; font-size: 0.8em; }
     </style>
 </head>
 <body>
@@ -47,110 +49,56 @@
     </div>
 
     <div class="timer-box">
-        <span id="timeDisplay">25:00</span>
+        <input type="number" id="customMinutes" placeholder="Min">
+        <span id="timeDisplay">00:00</span>
         <button class="timer-btn" onclick="startTimer()">▶ Start Focus</button>
         <button class="timer-btn" onclick="resetTimer()">⏹ Reset</button>
+        <span class="warning-text">⚠️ WARNING: Tab change kiya toh 50 XP kategi!</span>
     </div>
 
     <input type="text" id="taskInput" placeholder="> Enter new mission...">
-
-    <select id="categoryInput">
-        <option value="💡 Idea / Script">💡 Idea / Script</option>
-        <option value="🎥 Vlog Shoot">🎥 Vlog Shoot</option>
-        <option value="🎬 DaVinci Edit">🎬 DaVinci Edit</option>
-        <option value="☕ Java Code">☕ Java Code</option>
-        <option value="⚡ General">⚡ General</option>
-    </select>
-
     <input type="datetime-local" id="dateInput">
-
     <button class="add-btn" onclick="addTask()">Deploy Task</button>
-
     <ul id="taskList"></ul>
+
+    <div class="vault-section">
+        <h2>🧠 IDEA VAULT</h2>
+        <textarea id="ideaInput" rows="3" placeholder="> Dump crazy experiment & vlog ideas here..."></textarea>
+        <button class="add-btn" style="background: #9b59b6; color: white;" onclick="addIdea()">Save Idea</button>
+        <ul id="ideaList"></ul>
+    </div>
 </div>
 
 <script>
-    // --- GAMIFICATION LOGIC ---
+    // --- GAMIFICATION & XP LOGIC ---
     let xp = parseInt(localStorage.getItem('hackerXP')) || 0;
     let streak = parseInt(localStorage.getItem('hackerStreak')) || 0;
-    let lastLogin = localStorage.getItem('lastLoginDate');
-
-    let today = new Date().toDateString();
-    if(lastLogin !== today) {
-        if(lastLogin === new Date(Date.now() - 86400000).toDateString()) {
-            streak++; // Logged in consecutive day
-        } else if (lastLogin !== null) {
-            streak = 0; // Streak broken
-        }
-        localStorage.setItem('lastLoginDate', today);
-        localStorage.setItem('hackerStreak', streak);
-    }
 
     document.getElementById('xpCount').innerText = xp;
     document.getElementById('streakCount').innerText = "🔥 " + streak;
 
-    function addXP() {
-        xp += 10;
+    function updateXP(amount) {
+        xp += amount;
+        if (xp < 0) xp = 0; // XP 0 se kam nahi ho sakti
         localStorage.setItem('hackerXP', xp);
         document.getElementById('xpCount').innerText = xp;
     }
 
-    // --- TASK MANAGER LOGIC ---
-    let tasks = JSON.parse(localStorage.getItem('hackerTasks')) || [];
-    document.addEventListener('DOMContentLoaded', renderTasks);
+    // --- STRICT FOCUS PENALTY (THE KILLER FEATURE) ---
+    let isTimerRunning = false;
 
-    function addTask() {
-        let text = document.getElementById('taskInput').value;
-        let cat = document.getElementById('categoryInput').value;
-        let date = document.getElementById('dateInput').value;
-
-        if(text === "") return alert("Mission details required!");
-
-        tasks.push({ id: Date.now(), text, cat, date, done: false });
-        saveAndRender();
-
-        document.getElementById('taskInput').value = "";
-        document.getElementById('dateInput').value = "";
-    }
-
-    function completeTask(id) {
-        let task = tasks.find(t => t.id === id);
-        if(!task.done) {
-            task.done = true;
-            addXP(); // Add XP only when completing
-            saveAndRender();
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden && isTimerRunning) {
+            // User ne tab change kiya!
+            alert("🚨 PENALTY! Focus ke waqt tab change kyu kiya? -50 XP!");
+            updateXP(-50); // 50 XP kaat lo
+            resetTimer(); // Timer rok do
         }
-    }
+    });
 
-    function saveAndRender() {
-        localStorage.setItem('hackerTasks', JSON.stringify(tasks));
-        renderTasks();
-    }
-
-    function renderTasks() {
-        let list = document.getElementById('taskList');
-        list.innerHTML = "";
-
-        tasks.forEach(task => {
-            let li = document.createElement('li');
-            if(task.done) li.className = "completed";
-
-            let displayDate = task.date ? new Date(task.date).toLocaleString('en-IN') : "No deadline";
-
-            li.innerHTML = `
-                    <div class="task-header">
-                        <span>${task.text} <span class="task-cat">${task.cat}</span></span>
-                        ${!task.done ? `<button class="check-btn" onclick="completeTask(${task.id})">✔ DONE</button>` : '<span>✅</span>'}
-                    </div>
-                    <div class="task-date">🕒 Due: ${displayDate}</div>
-                `;
-            list.appendChild(li);
-        });
-    }
-
-    // --- POMODORO TIMER LOGIC ---
+    // --- TIMER LOGIC ---
     let timerInterval;
-    let timeLeft = 1500; // 25 minutes in seconds
+    let timeLeft = 0;
 
     function updateTimerDisplay() {
         let m = Math.floor(timeLeft / 60);
@@ -159,14 +107,23 @@
     }
 
     function startTimer() {
+        let userMinutes = parseInt(document.getElementById('customMinutes').value);
+        if(isNaN(userMinutes) || userMinutes <= 0) return alert("Sahi time daal!");
+
         clearInterval(timerInterval);
+        timeLeft = userMinutes * 60;
+        updateTimerDisplay();
+        isTimerRunning = true; // Timer shuru ho gaya
+
         timerInterval = setInterval(() => {
             if(timeLeft > 0) {
                 timeLeft--;
                 updateTimerDisplay();
             } else {
                 clearInterval(timerInterval);
-                alert("Focus Session Complete! Take a 5 min break.");
+                isTimerRunning = false; // Timer khatam
+                alert("Focus Complete! +20 XP mil gaye!");
+                updateXP(20); // Focus complete karne par extra XP
                 let audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
                 audio.play();
             }
@@ -175,8 +132,85 @@
 
     function resetTimer() {
         clearInterval(timerInterval);
-        timeLeft = 1500;
-        updateTimerDisplay();
+        isTimerRunning = false;
+        document.getElementById('timeDisplay').innerText = "00:00";
+        document.getElementById('customMinutes').value = "";
+    }
+
+    // --- TASK MANAGER ---
+    let tasks = JSON.parse(localStorage.getItem('hackerTasks')) || [];
+    document.addEventListener('DOMContentLoaded', renderTasks);
+
+    function addTask() {
+        let text = document.getElementById('taskInput').value;
+        let date = document.getElementById('dateInput').value;
+        if(text === "") return;
+
+        tasks.push({ id: Date.now(), text, date, done: false });
+        localStorage.setItem('hackerTasks', JSON.stringify(tasks));
+        document.getElementById('taskInput').value = "";
+        renderTasks();
+    }
+
+    function completeTask(id) {
+        let task = tasks.find(t => t.id === id);
+        if(!task.done) {
+            task.done = true;
+            updateXP(10); // Task done par 10 XP
+            localStorage.setItem('hackerTasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+    }
+
+    function renderTasks() {
+        let list = document.getElementById('taskList');
+        list.innerHTML = "";
+        tasks.forEach(task => {
+            let li = document.createElement('li');
+            if(task.done) li.className = "completed";
+            li.innerHTML = `
+                    <div class="task-header">
+                        <span>${task.text}</span>
+                        ${!task.done ? `<button class="check-btn" onclick="completeTask(${task.id})">✔ DONE</button>` : '<span>✅</span>'}
+                    </div>
+                `;
+            list.appendChild(li);
+        });
+    }
+
+    // --- IDEA VAULT LOGIC ---
+    let ideas = JSON.parse(localStorage.getItem('hackerIdeas')) || [];
+    document.addEventListener('DOMContentLoaded', renderIdeas);
+
+    function addIdea() {
+        let text = document.getElementById('ideaInput').value;
+        if(text === "") return;
+        ideas.push({ id: Date.now(), text });
+        localStorage.setItem('hackerIdeas', JSON.stringify(ideas));
+        document.getElementById('ideaInput').value = "";
+        renderIdeas();
+    }
+
+    function deleteIdea(id) {
+        ideas = ideas.filter(i => i.id !== id);
+        localStorage.setItem('hackerIdeas', JSON.stringify(ideas));
+        renderIdeas();
+    }
+
+    function renderIdeas() {
+        let list = document.getElementById('ideaList');
+        list.innerHTML = "";
+        ideas.forEach(idea => {
+            let li = document.createElement('li');
+            li.className = "idea-item";
+            li.innerHTML = `
+                    <div class="task-header">
+                        <span>${idea.text}</span>
+                        <button class="delete-btn" onclick="deleteIdea(${idea.id})">X</button>
+                    </div>
+                `;
+            list.appendChild(li);
+        });
     }
 </script>
 </body>
