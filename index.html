@@ -8,32 +8,41 @@
     <meta name="apple-mobile-web-app-title" content="Cortex">
     <meta name="application-name" content="Cortex">
     <style>
-        /* CSS Variables - Yeh rang rank ke hisaab se badlega */
-        :root {
-            --theme-color: #00ff00; 
-        }
-
-        body { font-family: 'Courier New', Courier, monospace; background: #050505; color: var(--theme-color); text-align: center; padding: 20px; margin: 0; transition: color 0.5s; }
-        .container { background: #111; padding: 25px; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid var(--theme-color); box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); transition: border-color 0.5s, box-shadow 0.5s; }
+        /* CSS Variables & Core Styling */
+        :root { --theme-color: #00ff00; }
+        body { font-family: 'Courier New', Courier, monospace; background: #050505; color: var(--theme-color); text-align: center; padding: 15px; margin: 0; transition: color 0.5s; }
+        .container { background: #111; padding: 20px; border-radius: 10px; max-width: 1000px; margin: auto; border: 1px solid var(--theme-color); box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); transition: border-color 0.5s, box-shadow 0.5s; }
         h1 { text-shadow: 0 0 10px var(--theme-color); letter-spacing: 2px; }
         
+        /* Stats & Timer */
         .stats-board { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px dashed var(--theme-color); margin-bottom: 20px; font-weight: bold; font-size: 1.2em; display: flex; justify-content: space-around; transition: border-color 0.5s; }
         .xp-text { color: #f1c40f; text-shadow: 0 0 5px #f1c40f; }
-        
         .timer-box { background: #1a0000; border: 1px solid #ff0000; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         #timeDisplay { font-size: 2.5em; font-weight: bold; display: block; margin-bottom: 10px; color: #ff4444; }
-        .timer-btn { background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin: 5px; }
+        .timer-btn { background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin: 5px; font-weight: bold; }
         .timer-btn:hover { background: #ff4444; color: #000; }
         
-        input, textarea { padding: 12px; width: 90%; margin: 8px 0; background: #000; border: 1px solid var(--theme-color); color: var(--theme-color); border-radius: 4px; outline: none; box-sizing: border-box; transition: border-color 0.5s; }
-        button.add-btn { background: var(--theme-color); color: #000; border: none; padding: 12px; width: 90%; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1.1em; text-transform: uppercase; margin-top: 10px; transition: 0.3s;}
-        button.add-btn:hover { opacity: 0.8; box-shadow: 0 0 15px var(--theme-color); }
+        /* Inputs & Buttons */
+        input { padding: 12px; width: 80%; margin: 8px 0; background: #000; border: 1px solid var(--theme-color); color: var(--theme-color); border-radius: 4px; outline: none; box-sizing: border-box; transition: border-color 0.5s; font-family: 'Courier New'; }
+        button.add-btn { background: var(--theme-color); color: #000; border: none; padding: 12px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1.1em; text-transform: uppercase; margin-left: 5px; transition: 0.3s;}
+        button.add-btn:hover { box-shadow: 0 0 15px var(--theme-color); }
         
-        ul { list-style: none; padding: 0; text-align: left; }
-        li { background: #111; padding: 15px; margin-top: 10px; border: 1px solid #333; border-left: 5px solid var(--theme-color); display: flex; justify-content: space-between; align-items: center; transition: border-color 0.5s; }
+        /* 🔥 KANBAN BOARD STYLES 🔥 */
+        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 30px; }
+        .kanban-col { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 15px; min-height: 300px; }
+        .kanban-col h2 { font-size: 1.2em; border-bottom: 2px dashed var(--theme-color); padding-bottom: 10px; margin-top: 0; }
         
+        ul { list-style: none; padding: 0; text-align: left; margin: 0; }
+        li { background: #0a0a0a; padding: 15px; margin-top: 10px; border: 1px solid #333; border-left: 5px solid var(--theme-color); border-radius: 5px; transition: border-color 0.5s; display: flex; flex-direction: column; gap: 10px; }
+        
+        .task-actions { display: flex; justify-content: space-between; border-top: 1px solid #222; padding-top: 10px; margin-top: 5px; }
+        .action-btn { background: transparent; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 5px 10px; cursor: pointer; border-radius: 3px; font-weight: bold; font-size: 0.9em; }
+        .action-btn:hover { background: var(--theme-color); color: #000; }
+        .del-btn { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        
+        /* Auth */
         .login-box { margin-top: 100px; padding: 40px; }
-        #loginBtn { background: #4285F4; color: white; border: none; padding: 15px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; font-weight: bold; box-shadow: 0 4px 10px rgba(66, 133, 244, 0.4); }
+        #loginBtn { background: #4285F4; color: white; border: none; padding: 15px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; font-weight: bold; }
         #userInfo { font-size: 0.9em; color: #aaa; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         #logoutBtn { background: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
     </style>
@@ -42,12 +51,12 @@
 
     <div id="loginScreen" class="container login-box">
         <h1>[ SYSTEM_LOCKED ]</h1>
-        <p style="color: #888; margin-bottom: 30px;">Access restricted. Identity verification required.</p>
+        <p style="color: #888; margin-bottom: 30px;">Cortex authorization required.</p>
         <button id="loginBtn">🛡️ Login with Google</button>
     </div>
 
     <div id="appScreen" class="container" style="display: none;">
-        <h1>[ CORTEX_OS_ONLINE ]</h1>
+        <h1>[ CORTEX_OS ]</h1>
         
         <div id="userInfo">
             <span>Agent: <b id="userName" style="color:var(--theme-color);"></b></span>
@@ -60,29 +69,40 @@
         </div>
 
         <div class="timer-box">
-            <input type="number" id="customMinutes" placeholder="Minutes..." style="width: 120px; text-align: center; font-size: 1.2em; border-color: #ff4444; color: #ff4444;">
+            <input type="number" id="customMinutes" placeholder="Min" style="width: 80px; text-align: center; border-color: #ff4444; color: #ff4444;">
             <span id="timeDisplay">00:00</span>
-            <button class="timer-btn" id="startTimerBtn">▶ Start Focus</button>
+            <button class="timer-btn" id="startTimerBtn">▶ Focus</button>
             <button class="timer-btn" id="resetTimerBtn">⏹ Reset</button>
-            <div style="color: #ffaa00; font-size: 0.8em; margin-top: 10px;">⚠️ WARNING: Tab changed = 50 XP Penalty!</div>
+            <div style="color: #ffaa00; font-size: 0.8em; margin-top: 10px;">⚠️ Tab change = 50 XP Penalty!</div>
         </div>
         
-        <input type="text" id="taskInput" placeholder="> Enter new mission objective...">
-        <button class="add-btn" id="addTaskBtn">Deploy Task</button>
-        <ul id="taskList"></ul>
+        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+            <input type="text" id="taskInput" placeholder="> Enter new idea or task...">
+            <button class="add-btn" id="addTaskBtn">ADD</button>
+        </div>
 
-        <div style="margin-top: 40px; border-top: 2px dashed var(--theme-color); padding-top: 20px;">
-            <h2>🧠 IDEA VAULT</h2>
-            <textarea id="ideaInput" rows="2" placeholder="> Dump crazy experiments & vlog ideas..."></textarea>
-            <button class="add-btn" id="addIdeaBtn" style="background: #9b59b6; color: white;">Save Idea to Cloud</button>
-            <ul id="ideaList"></ul>
+        <div class="kanban-board">
+            <div class="kanban-col">
+                <h2>💡 IDEAS</h2>
+                <ul id="ideaCol"></ul>
+            </div>
+            
+            <div class="kanban-col">
+                <h2>🎥 ACTION (Shoot/Code)</h2>
+                <ul id="actionCol"></ul>
+            </div>
+            
+            <div class="kanban-col">
+                <h2>🎬 POST-PROD</h2>
+                <ul id="postCol"></ul>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc",
@@ -101,37 +121,21 @@
         let currentUser = null;
         let userXP = 0;
 
-        // 🏆 RANK SYSTEM FUNCTION
+        // 🏆 RANK SYSTEM
         function checkAndSetRank(xp) {
-            let rankName = "Novice";
-            let color = "#00ff00"; // Hacker Green
-
-            if (xp >= 100 && xp < 500) {
-                rankName = "Pro Coder";
-                color = "#00bfff"; // Sky Blue
-            } else if (xp >= 500 && xp < 1000) {
-                rankName = "Master Creator";
-                color = "#9b59b6"; // Purple
-            } else if (xp >= 1000) {
-                rankName = "Code Ninja";
-                color = "#ff003c"; // Neon Red
-            }
+            let rankName = "Novice"; let color = "#00ff00"; 
+            if (xp >= 100 && xp < 500) { rankName = "Pro Coder"; color = "#00bfff"; } 
+            else if (xp >= 500 && xp < 1000) { rankName = "Master Creator"; color = "#9b59b6"; } 
+            else if (xp >= 1000) { rankName = "Code Ninja"; color = "#ff003c"; }
 
             document.getElementById('rankTitle').innerText = rankName;
             document.documentElement.style.setProperty('--theme-color', color);
-            
-            // Meta theme color update for mobile status bar
             document.querySelector('meta[name="theme-color"]').setAttribute('content', color);
         }
 
-        // --- AUTHENTICATION ---
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            signInWithPopup(auth, provider).catch(error => alert("Login Error: " + error.message));
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth);
-        });
+        // --- AUTH ---
+        document.getElementById('loginBtn').addEventListener('click', () => signInWithPopup(auth, provider));
+        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -147,128 +151,116 @@
             }
         });
 
-        // --- LOAD DATA ---
+        // --- LOAD KANBAN DATA ---
         function loadCloudData() {
             const q = query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc"));
             onSnapshot(q, (snapshot) => {
-                const taskList = document.getElementById('taskList');
-                taskList.innerHTML = "";
+                const ideaCol = document.getElementById('ideaCol');
+                const actionCol = document.getElementById('actionCol');
+                const postCol = document.getElementById('postCol');
+                
+                ideaCol.innerHTML = ""; actionCol.innerHTML = ""; postCol.innerHTML = "";
+
                 snapshot.forEach((docSnap) => {
                     let task = docSnap.data();
-                    let li = document.createElement('li');
-                    li.innerHTML = `
-                        <span>${task.text}</span>
-                        <button onclick="completeTask('${docSnap.id}')" style="background:var(--theme-color); color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold; border-radius:3px;">✔ DONE</button>
-                    `;
-                    taskList.appendChild(li);
-                });
-            });
+                    let id = docSnap.id;
+                    let status = task.status || 'idea'; // By default new tasks go to Ideas
 
-            onSnapshot(collection(db, "users", currentUser.uid, "ideas"), (snapshot) => {
-                const ideaList = document.getElementById('ideaList');
-                ideaList.innerHTML = "";
-                snapshot.forEach((docSnap) => {
-                    let idea = docSnap.data();
                     let li = document.createElement('li');
-                    li.style.borderLeft = "5px solid #9b59b6";
-                    li.innerHTML = `
-                        <span>${idea.text}</span>
-                        <button onclick="deleteIdea('${docSnap.id}')" style="background:#e74c3c; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:3px;">X</button>
-                    `;
-                    ideaList.appendChild(li);
+                    li.innerHTML = `<span style="font-weight: bold; font-size: 1.1em;">${task.text}</span>`;
+                    
+                    let actions = `<div class="task-actions">`;
+                    
+                    // Buttons based on status
+                    if(status === 'idea') {
+                        actions += `<button class="action-btn" onclick="moveTask('${id}', 'action')">Move ➡️</button>`;
+                    } else if(status === 'action') {
+                        actions += `<button class="action-btn" onclick="moveTask('${id}', 'post')">Move ➡️</button>`;
+                    } else if(status === 'post') {
+                        actions += `<button class="action-btn" style="background:var(--theme-color); color:#000;" onclick="completeTask('${id}')">✔ UPLOAD/DONE</button>`;
+                    }
+                    
+                    actions += `<button class="del-btn" onclick="deleteTask('${id}')">❌</button></div>`;
+                    li.innerHTML += actions;
+
+                    if(status === 'idea') ideaCol.appendChild(li);
+                    else if(status === 'action') actionCol.appendChild(li);
+                    else if(status === 'post') postCol.appendChild(li);
                 });
             });
 
             let savedXP = localStorage.getItem('suryanshXP_' + currentUser.uid);
             userXP = savedXP ? parseInt(savedXP) : 0;
             document.getElementById('xpCount').innerText = userXP;
-            checkAndSetRank(userXP); // Set rank on load
+            checkAndSetRank(userXP); 
         }
 
-        // --- ACTIONS ---
+        // --- ADD & MOVE TASKS ---
         document.getElementById('addTaskBtn').addEventListener('click', async () => {
             const text = document.getElementById('taskInput').value;
             if (!text || !currentUser) return;
             await addDoc(collection(db, "users", currentUser.uid, "tasks"), {
                 text: text,
+                status: 'idea', // Pehla step Idea
                 createdAt: serverTimestamp()
             });
             document.getElementById('taskInput').value = "";
         });
 
-        document.getElementById('addIdeaBtn').addEventListener('click', async () => {
-            const text = document.getElementById('ideaInput').value;
-            if (!text || !currentUser) return;
-            await addDoc(collection(db, "users", currentUser.uid, "ideas"), { text: text });
-            document.getElementById('ideaInput').value = "";
-        });
+        window.moveTask = async (taskId, newStatus) => {
+            await updateDoc(doc(db, "users", currentUser.uid, "tasks", taskId), {
+                status: newStatus
+            });
+        };
 
         window.completeTask = async (taskId) => {
-            updateXP(25); // 🚀 Task complete karne par 25 XP
+            updateXP(50); // 🚀 Pura Pipeline khatam karne par 50 XP!
             await deleteDoc(doc(db, "users", currentUser.uid, "tasks", taskId));
         };
 
-        window.deleteIdea = async (ideaId) => {
-            await deleteDoc(doc(db, "users", currentUser.uid, "ideas", ideaId));
+        window.deleteTask = async (taskId) => {
+            await deleteDoc(doc(db, "users", currentUser.uid, "tasks", taskId));
         };
 
-        // --- XP UPDATE ---
+        // --- XP & TIMER ---
         function updateXP(amount) {
             userXP += amount;
             if (userXP < 0) userXP = 0;
             localStorage.setItem('suryanshXP_' + currentUser.uid, userXP);
             document.getElementById('xpCount').innerText = userXP;
-            checkAndSetRank(userXP); // Update UI automatically
+            checkAndSetRank(userXP); 
         }
 
-        // --- TIMER & PENALTY ---
-        let timerInterval;
-        let timeLeft = 0;
-        let isTimerRunning = false;
+        let timerInterval; let timeLeft = 0; let isTimerRunning = false;
 
         document.addEventListener("visibilitychange", function() {
             if (document.hidden && isTimerRunning) {
                 alert("🚨 PENALTY! Focus ke waqt tab change kyu kiya? -50 XP!");
-                updateXP(-50);
-                resetMyTimer();
+                updateXP(-50); resetMyTimer();
             }
         });
 
         document.getElementById('startTimerBtn').addEventListener('click', () => {
             let mins = parseInt(document.getElementById('customMinutes').value);
             if(isNaN(mins) || mins <= 0) return alert("Sahi time daal!");
-            
-            clearInterval(timerInterval);
-            timeLeft = mins * 60;
-            isTimerRunning = true;
-            
+            clearInterval(timerInterval); timeLeft = mins * 60; isTimerRunning = true;
             timerInterval = setInterval(() => {
                 if(timeLeft > 0) {
                     timeLeft--;
-                    let m = Math.floor(timeLeft / 60);
-                    let s = timeLeft % 60;
+                    let m = Math.floor(timeLeft / 60); let s = timeLeft % 60;
                     document.getElementById('timeDisplay').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
                 } else {
-                    clearInterval(timerInterval);
-                    isTimerRunning = false;
-                    alert("Focus Complete! +50 XP mil gaye!");
-                    updateXP(50);
+                    clearInterval(timerInterval); isTimerRunning = false;
+                    alert("Focus Complete! +50 XP mil gaye!"); updateXP(50);
                 }
             }, 1000);
         });
 
         document.getElementById('resetTimerBtn').addEventListener('click', resetMyTimer);
-
-        function resetMyTimer() {
-            clearInterval(timerInterval);
-            isTimerRunning = false;
-            document.getElementById('timeDisplay').innerText = "00:00";
-        }
+        function resetMyTimer() { clearInterval(timerInterval); isTimerRunning = false; document.getElementById('timeDisplay').innerText = "00:00"; }
         
-        // PWA Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+        // PWA Init
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
     </script>
 </body>
 </html>
