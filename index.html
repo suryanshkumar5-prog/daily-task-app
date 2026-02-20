@@ -315,4 +315,75 @@
                 snapshot.forEach(d => { let r = d.data(); let li = document.createElement('li'); li.style.borderLeft="5px solid #ff003c"; li.innerHTML = `<span>${r.text} <small>(${r.time})</small></span> <button class="action-btn" onclick="deleteRoutine('${d.id}')">❌</button>`; rc.appendChild(li); });
             });
 
-            userXP = parseInt(localStorage.getItem('suryanshXP_'+currentUser.uid)) || 0
+            userXP = parseInt(localStorage.getItem('suryanshXP_'+currentUser.uid)) || 0;
+            focusMins = parseInt(localStorage.getItem('suryanshFocus_'+currentUser.uid)) || 0;
+            document.getElementById('streakCount').innerText = localStorage.getItem('suryanshStreak_'+currentUser.uid) || 0;
+            updateStats();
+        }
+
+        // --- DATABASE ACTIONS ---
+        document.getElementById('addTaskBtn').addEventListener('click', async () => {
+            let text = document.getElementById('taskInput').value; let prio = document.getElementById('taskPriority').value;
+            if (!text) return; await addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: text, priority: prio, status: 'idea', createdAt: serverTimestamp() });
+            document.getElementById('taskInput').value = "";
+        });
+        document.getElementById('addRoutineBtn').addEventListener('click', async () => {
+            let text = document.getElementById('routineInput').value; let time = document.getElementById('routineTime').value;
+            if (!text || !time) return; await addDoc(collection(db, "users", currentUser.uid, "routines"), { text: text, time: time });
+        });
+        
+        window.moveTask = async (id, s) => { await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: s }); };
+        window.completeTask = async (id) => { updateXP(50); await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: 'post' }); }; // Changed logic to keep in POST column
+        window.deleteTask = async (id) => { await deleteDoc(doc(db, "users", currentUser.uid, "tasks", id)); };
+        window.deleteRoutine = async (id) => { await deleteDoc(doc(db, "users", currentUser.uid, "routines", id)); };
+
+        // Wipe Done Tasks Button
+        document.getElementById('clearTasksBtn').addEventListener('click', async () => {
+             // Basic implementation to avoid massive DB calls from client
+             alert("Wipe Post-Prod Tasks triggered! (Deleting from UI manually or click X on each).");
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ xp: userXP, focus: focusMins, exportDate: new Date() }));
+            let a = document.createElement('a'); a.href = dataStr; a.download = "cortex_backup.json"; a.click();
+        });
+
+        // XP & TIMER & LIFETIME FOCUS
+        function updateStats() {
+            localStorage.setItem('suryanshXP_'+currentUser.uid, userXP); localStorage.setItem('suryanshFocus_'+currentUser.uid, focusMins);
+            document.getElementById('xpCount').innerText = userXP; document.getElementById('lifeFocus').innerText = focusMins;
+            document.getElementById('xpProgress').value = userXP % 1000;
+            let c = userXP>1000 ? "#ff003c" : userXP>500 ? "#9b59b6" : userXP>100 ? "#00bfff" : "#00ff00";
+            document.documentElement.style.setProperty('--theme-color', c);
+        }
+        function updateXP(a) { 
+            let h = new Date().getHours(); if (h >= 21 && h < 23) a = a * 2; // Happy Hour Logic
+            userXP += a; if(userXP<0) userXP=0; updateStats(); 
+        }
+
+        let timerInterval; let timeLeft = 0; let focusSessionMins = 0;
+        document.getElementById('startTimerBtn').addEventListener('click', () => {
+            focusSessionMins = parseInt(document.getElementById('customMinutes').value); if(!focusSessionMins) return;
+            clearInterval(timerInterval); timeLeft = focusSessionMins * 60;
+            
+            // Streak Logic Update
+            let streak = parseInt(localStorage.getItem('suryanshStreak_'+currentUser.uid)) || 0;
+            localStorage.setItem('suryanshStreak_'+currentUser.uid, streak + 1); document.getElementById('streakCount').innerText = streak + 1;
+
+            timerInterval = setInterval(() => {
+                if(timeLeft > 0) {
+                    timeLeft--; let m = Math.floor(timeLeft/60); let s = timeLeft%60;
+                    document.getElementById('timeDisplay').innerText = `${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+                } else {
+                    clearInterval(timerInterval); document.getElementById('successSound').play(); alert("Focus Complete! +50 XP!"); updateXP(50); 
+                    focusMins += focusSessionMins; updateStats(); document.getElementById('timeDisplay').innerText = "00:00";
+                }
+            }, 1000);
+        });
+        document.getElementById('resetTimerBtn').addEventListener('click', () => { clearInterval(timerInterval); document.getElementById('timeDisplay').innerText = "00:00"; });
+        
+        let lofiPlaying = false; document.getElementById('lofiBtn').addEventListener('click', () => { let audio = document.getElementById('lofiAudio'); lofiPlaying ? audio.pause() : audio.play(); lofiPlaying = !lofiPlaying; document.getElementById('lofiBtn').innerText = lofiPlaying ? "⏸ Pause Lofi" : "🎵 Play Lofi"; });
+
+    </script>
+</body>
+</html>
