@@ -10,9 +10,15 @@
     <style>
         /* CSS Variables & Core Styling */
         :root { --theme-color: #00ff00; }
-        body { font-family: 'Courier New', Courier, monospace; background: #050505; color: var(--theme-color); text-align: center; padding: 15px; margin: 0; transition: color 0.5s; }
+        body { font-family: 'Courier New', Courier, monospace; background: #050505; color: var(--theme-color); text-align: center; padding: 10px; margin: 0; transition: color 0.5s; }
         .container { background: #111; padding: 20px; border-radius: 10px; max-width: 1000px; margin: auto; border: 1px solid var(--theme-color); box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); transition: border-color 0.5s, box-shadow 0.5s; }
-        h1 { text-shadow: 0 0 10px var(--theme-color); letter-spacing: 2px; }
+        
+        /* 🌐 TOP BAR: CLOCK & WEATHER */
+        .top-bar { display: flex; justify-content: space-between; background: #0a0a0a; padding: 10px 20px; border-radius: 8px; border-bottom: 2px solid var(--theme-color); margin-bottom: 15px; font-weight: bold; font-size: 1.2em; }
+        #weatherDisplay { color: #00bfff; text-shadow: 0 0 5px #00bfff; }
+        #clockDisplay { color: #ff003c; text-shadow: 0 0 5px #ff003c; }
+
+        h1 { text-shadow: 0 0 10px var(--theme-color); letter-spacing: 2px; margin-top: 5px; }
         
         /* Stats & Timer */
         .stats-board { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px dashed var(--theme-color); margin-bottom: 20px; font-weight: bold; font-size: 1.2em; display: flex; justify-content: space-around; transition: border-color 0.5s; }
@@ -23,28 +29,30 @@
         .timer-btn:hover { background: #ff4444; color: #000; }
         
         /* Inputs & Buttons */
-        input { padding: 12px; width: 80%; margin: 8px 0; background: #000; border: 1px solid var(--theme-color); color: var(--theme-color); border-radius: 4px; outline: none; box-sizing: border-box; transition: border-color 0.5s; font-family: 'Courier New'; }
+        input { padding: 12px; width: 80%; margin: 8px 0; background: #000; border: 1px solid var(--theme-color); color: var(--theme-color); border-radius: 4px; outline: none; box-sizing: border-box; font-family: 'Courier New'; }
         button.add-btn { background: var(--theme-color); color: #000; border: none; padding: 12px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1.1em; text-transform: uppercase; margin-left: 5px; transition: 0.3s;}
         button.add-btn:hover { box-shadow: 0 0 15px var(--theme-color); }
         
-        /* Kanban Board */
+        /* Kanban & Routine */
         .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 30px; }
         .kanban-col { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 15px; min-height: 250px; }
         .kanban-col h2 { font-size: 1.2em; border-bottom: 2px dashed var(--theme-color); padding-bottom: 10px; margin-top: 0; }
-        
         ul { list-style: none; padding: 0; text-align: left; margin: 0; }
-        li { background: #0a0a0a; padding: 15px; margin-top: 10px; border: 1px solid #333; border-left: 5px solid var(--theme-color); border-radius: 5px; transition: border-color 0.5s; display: flex; flex-direction: column; gap: 10px; }
-        
+        li { background: #0a0a0a; padding: 15px; margin-top: 10px; border: 1px solid #333; border-left: 5px solid var(--theme-color); border-radius: 5px; display: flex; flex-direction: column; gap: 10px; }
         .task-actions { display: flex; justify-content: space-between; border-top: 1px solid #222; padding-top: 10px; margin-top: 5px; }
-        .action-btn { background: transparent; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 5px 10px; cursor: pointer; border-radius: 3px; font-weight: bold; font-size: 0.9em; }
+        .action-btn, .del-btn { background: transparent; padding: 5px 10px; cursor: pointer; border-radius: 3px; font-weight: bold; font-size: 0.9em; }
+        .action-btn { color: var(--theme-color); border: 1px solid var(--theme-color); }
         .action-btn:hover { background: var(--theme-color); color: #000; }
-        .del-btn { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        .del-btn { color: #e74c3c; border: 1px solid #e74c3c; }
+        
+        /* 🤖 CORTEX AI TERMINAL */
+        .ai-console { margin-top: 40px; border: 2px solid #00bfff; border-radius: 8px; padding: 15px; background: #001a33; text-align: left; }
+        .ai-console h2 { color: #00bfff; margin-top: 0; }
+        #aiOutput { background: #000; border: 1px solid #00bfff; padding: 15px; border-radius: 5px; height: 150px; overflow-y: auto; margin-bottom: 10px; color: #fff; font-size: 0.9em; white-space: pre-wrap;}
         
         /* Auth */
         .login-box { margin-top: 100px; padding: 40px; }
         #loginBtn { background: #4285F4; color: white; border: none; padding: 15px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        #userInfo { font-size: 0.9em; color: #aaa; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        #logoutBtn { background: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -56,11 +64,17 @@
     </div>
 
     <div id="appScreen" class="container" style="display: none;">
+        
+        <div class="top-bar">
+            <div id="weatherDisplay">☁️ Loading...</div>
+            <div id="clockDisplay">00:00:00</div>
+        </div>
+
         <h1>[ CORTEX_OS ]</h1>
         
-        <div id="userInfo">
+        <div style="font-size: 0.9em; color: #aaa; margin-bottom: 20px; display: flex; justify-content: space-between;">
             <span>Agent: <b id="userName" style="color:var(--theme-color);"></b></span>
-            <button id="logoutBtn">Logout</button>
+            <button id="logoutBtn" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px;">Logout</button>
         </div>
         
         <div class="stats-board">
@@ -73,15 +87,13 @@
             <span id="timeDisplay">00:00</span>
             <button class="timer-btn" id="startTimerBtn">▶ Focus</button>
             <button class="timer-btn" id="resetTimerBtn">⏹ Reset</button>
-            <div style="color: #ffaa00; font-size: 0.8em; margin-top: 10px;">⚠️ Tab change = 50 XP Penalty!</div>
         </div>
         
-        <div style="margin-top: 30px; border-top: 2px dashed #ff003c; padding-top: 20px; background: #0a0000; border-radius: 8px; padding: 15px;">
+        <div style="margin-top: 10px; border-top: 2px dashed #ff003c; padding-top: 20px; background: #0a0000; border-radius: 8px; padding: 15px;">
             <h2 style="color: #ff003c; margin-top: 0;">👿 KHADUS ROUTINE</h2>
-            <p style="color: #ffaa00; font-size: 0.9em; margin-bottom: 15px;">Time par check-in nahi kiya toh -100 XP penalty!</p>
             <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
                 <input type="text" id="routineInput" placeholder="> Daily task..." style="width: 50%;">
-                <input type="time" id="routineTime" style="width: 25%; font-family: 'Courier New';">
+                <input type="time" id="routineTime" style="width: 25%;">
                 <button class="add-btn" id="addRoutineBtn" style="background: #ff003c; color: white; width: auto; font-size: 0.9em;">Set</button>
             </div>
             <ul id="routineCol"></ul>
@@ -90,22 +102,22 @@
         <div class="kanban-board">
             <div class="kanban-col">
                 <h2>💡 IDEAS</h2>
-                <div style="display:flex;">
-                    <input type="text" id="taskInput" placeholder="> Naya Idea...">
-                    <button class="add-btn" id="addTaskBtn" style="padding: 12px 10px;">+</button>
-                </div>
+                <div style="display:flex;"><input type="text" id="taskInput" placeholder="> Naya Idea..."><button class="add-btn" id="addTaskBtn" style="padding: 12px 10px;">+</button></div>
                 <ul id="ideaCol"></ul>
             </div>
             <div class="kanban-col"><h2>🎥 ACTION</h2><ul id="actionCol"></ul></div>
             <div class="kanban-col"><h2>🎬 POST-PROD</h2><ul id="postCol"></ul></div>
         </div>
 
-        <div style="margin-top: 40px; border-top: 2px dashed #9b59b6; padding-top: 20px;">
-            <h2 style="color: #9b59b6;">🧠 VAULT</h2>
-            <textarea id="ideaInput" rows="2" placeholder="> Dump random thoughts..."></textarea>
-            <button class="add-btn" id="addIdeaBtn" style="background: #9b59b6; color: white;">Archive Idea</button>
-            <ul id="ideaList"></ul>
+        <div class="ai-console">
+            <h2>🧠 CORTEX AI SYSTEM</h2>
+            <div id="aiOutput">> System Ready. Ask me anything to boost your productivity.</div>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="aiInput" placeholder="> Type query for Cortex..." style="border-color: #00bfff; color: #00bfff;">
+                <button class="add-btn" id="askAiBtn" style="background: #00bfff; color: #000;">ASK</button>
+            </div>
         </div>
+
     </div>
 
     <script type="module">
@@ -127,8 +139,35 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        let currentUser = null;
-        let userXP = 0;
+        let currentUser = null; let userXP = 0;
+
+        // 🌐 CLOCK & WEATHER ENGINE
+        setInterval(() => {
+            document.getElementById('clockDisplay').innerText = new Date().toLocaleTimeString('en-IN');
+        }, 1000);
+
+        async function fetchWeather() {
+            try {
+                // Fetching Live Weather for Varanasi (Latitude: 25.3176, Longitude: 82.9739)
+                let res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=25.3176&longitude=82.9739&current=temperature_2m,weathercode");
+                let data = await res.json();
+                let temp = data.current.temperature_2m;
+                document.getElementById('weatherDisplay').innerText = `📍 VNS | 🌡️ ${temp}°C`;
+            } catch (err) {
+                document.getElementById('weatherDisplay').innerText = "🌡️ Weather Offline";
+            }
+        }
+        fetchWeather();
+
+        // 🤖 CORTEX AI ENGINE (Placeholder)
+        document.getElementById('askAiBtn').addEventListener('click', () => {
+            let question = document.getElementById('aiInput').value;
+            if(!question) return;
+            
+            let outputBox = document.getElementById('aiOutput');
+            outputBox.innerText = `> Cortex Thinking about: "${question}"...\n\n[ERROR] BRAIN_NOT_FOUND!\nGuru ji ka message: "Bhai Suryansh, AI ka UI toh set ho gaya hai, par isme Google Gemini ka API Key dalna padega tabhi yeh jawaab dega! Pehle API Key la kar de!"`;
+            document.getElementById('aiInput').value = "";
+        });
 
         // 🏆 RANK SYSTEM
         function checkAndSetRank(xp) {
@@ -136,10 +175,8 @@
             if (xp >= 100 && xp < 500) { rankName = "Pro Coder"; color = "#00bfff"; } 
             else if (xp >= 500 && xp < 1000) { rankName = "Master Creator"; color = "#9b59b6"; } 
             else if (xp >= 1000) { rankName = "Code Ninja"; color = "#ff003c"; }
-
             document.getElementById('rankTitle').innerText = rankName;
             document.documentElement.style.setProperty('--theme-color', color);
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', color);
         }
 
         // --- AUTH ---
@@ -160,7 +197,7 @@
             }
         });
 
-        // --- LOAD DATA (Kanban, Vault, and Routine) ---
+        // --- LOAD DATA (Kanban and Routine) ---
         function loadCloudData() {
             // Load Kanban
             const qTasks = query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc"));
@@ -185,47 +222,29 @@
                 });
             });
 
-            // Load Vault Ideas
-            onSnapshot(collection(db, "users", currentUser.uid, "ideas"), (snapshot) => {
-                const ideaList = document.getElementById('ideaList'); ideaList.innerHTML = "";
-                snapshot.forEach((docSnap) => {
-                    let idea = docSnap.data();
-                    let li = document.createElement('li'); li.style.borderLeft = "5px solid #9b59b6";
-                    li.innerHTML = `<span>${idea.text}</span><button onclick="deleteVaultIdea('${docSnap.id}')" style="background:#e74c3c; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:3px;">X</button>`;
-                    ideaList.appendChild(li);
-                });
-            });
-
-            // 🔥 LOAD KHADUS ROUTINE 🔥
+            // LOAD KHADUS ROUTINE
             onSnapshot(collection(db, "users", currentUser.uid, "routines"), (snapshot) => {
                 const routineCol = document.getElementById('routineCol');
                 routineCol.innerHTML = "";
-                
                 let todayDate = new Date().toLocaleDateString('en-IN');
-                // Getting current time in HH:MM format
                 let now = new Date();
-                let currentHours = String(now.getHours()).padStart(2, '0');
-                let currentMinutes = String(now.getMinutes()).padStart(2, '0');
-                let currentTimeString = `${currentHours}:${currentMinutes}`;
+                let currentTimeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
                 snapshot.forEach((docSnap) => {
                     let r = docSnap.data(); let id = docSnap.id;
                     let isDoneToday = (r.lastCompletedDate === todayDate);
                     let isFailedToday = (r.lastFailedDate === todayDate);
 
-                    // 👿 KHADUS LOGIC: Time check
                     if (!isDoneToday && !isFailedToday && currentTimeString > r.time) {
-                        alert(`🚨 KHADUS GURU PENALTY: Tune '${r.text}' time par nahi kiya! -100 XP Penalty!`);
+                        alert(`🚨 KHADUS PENALTY: '${r.text}' missed! -100 XP!`);
                         updateXP(-100);
                         updateDoc(doc(db, "users", currentUser.uid, "routines", id), { lastFailedDate: todayDate });
                         isFailedToday = true;
                     }
 
                     let li = document.createElement('li');
-                    li.style.borderLeft = "5px solid #ff003c";
-                    li.style.background = "#1a0505";
-                    
-                    let statusText = isDoneToday ? "✅ COMPLETED" : (isFailedToday ? "❌ FAILED (-100 XP)" : "⏳ PENDING");
+                    li.style.borderLeft = "5px solid #ff003c"; li.style.background = "#1a0505";
+                    let statusText = isDoneToday ? "✅ DONE" : (isFailedToday ? "❌ FAILED" : "⏳ PENDING");
                     
                     li.innerHTML = `
                         <div style="display: flex; flex-direction: column; text-align: left; gap: 5px;">
@@ -233,7 +252,7 @@
                             <span style="font-size: 0.8em; color: #ffaa00;">Deadline: ${r.time} | Status: ${statusText}</span>
                         </div>
                         <div class="task-actions">
-                            ${!isDoneToday && !isFailedToday ? `<button class="action-btn" style="background:#00ff00; color:#000; border:none;" onclick="completeRoutine('${id}')">✔ MARK DONE (+20 XP)</button>` : ''}
+                            ${!isDoneToday && !isFailedToday ? `<button class="action-btn" style="background:#00ff00; color:#000; border:none;" onclick="completeRoutine('${id}')">✔ (+20 XP)</button>` : ''}
                             <button class="del-btn" onclick="deleteRoutine('${id}')">❌</button>
                         </div>
                     `;
@@ -249,27 +268,19 @@
 
         // --- KHADUS ROUTINE FUNCTIONS ---
         document.getElementById('addRoutineBtn').addEventListener('click', async () => {
-            const text = document.getElementById('routineInput').value;
-            const time = document.getElementById('routineTime').value;
-            if (!text || !time || !currentUser) return alert("Bhai, Task aur Time dono daal!");
-            
-            await addDoc(collection(db, "users", currentUser.uid, "routines"), {
-                text: text, time: time, lastCompletedDate: "", lastFailedDate: ""
-            });
+            const text = document.getElementById('routineInput').value; const time = document.getElementById('routineTime').value;
+            if (!text || !time || !currentUser) return;
+            await addDoc(collection(db, "users", currentUser.uid, "routines"), { text: text, time: time, lastCompletedDate: "", lastFailedDate: "" });
             document.getElementById('routineInput').value = ""; document.getElementById('routineTime').value = "";
         });
 
         window.completeRoutine = async (id) => {
-            let todayDate = new Date().toLocaleDateString('en-IN');
-            updateXP(20); // Time par karne ka inaam
+            let todayDate = new Date().toLocaleDateString('en-IN'); updateXP(20); 
             await updateDoc(doc(db, "users", currentUser.uid, "routines", id), { lastCompletedDate: todayDate });
         };
+        window.deleteRoutine = async (id) => { await deleteDoc(doc(db, "users", currentUser.uid, "routines", id)); };
 
-        window.deleteRoutine = async (id) => {
-            await deleteDoc(doc(db, "users", currentUser.uid, "routines", id));
-        };
-
-        // --- KANBAN & VAULT FUNCTIONS ---
+        // --- KANBAN FUNCTIONS ---
         document.getElementById('addTaskBtn').addEventListener('click', async () => {
             const text = document.getElementById('taskInput').value;
             if (!text || !currentUser) return;
@@ -277,31 +288,18 @@
             document.getElementById('taskInput').value = "";
         });
 
-        document.getElementById('addIdeaBtn').addEventListener('click', async () => {
-            const text = document.getElementById('ideaInput').value;
-            if (!text || !currentUser) return;
-            await addDoc(collection(db, "users", currentUser.uid, "ideas"), { text: text });
-            document.getElementById('ideaInput').value = "";
-        });
-
         window.moveTask = async (taskId, newStatus) => { await updateDoc(doc(db, "users", currentUser.uid, "tasks", taskId), { status: newStatus }); };
         window.completeTask = async (taskId) => { updateXP(50); await deleteDoc(doc(db, "users", currentUser.uid, "tasks", taskId)); };
         window.deleteTask = async (taskId) => { await deleteDoc(doc(db, "users", currentUser.uid, "tasks", taskId)); };
-        window.deleteVaultIdea = async (ideaId) => { await deleteDoc(doc(db, "users", currentUser.uid, "ideas", ideaId)); };
 
         // --- XP & TIMER ---
         function updateXP(amount) {
             userXP += amount; if (userXP < 0) userXP = 0;
             localStorage.setItem('suryanshXP_' + currentUser.uid, userXP);
-            document.getElementById('xpCount').innerText = userXP;
-            checkAndSetRank(userXP); 
+            document.getElementById('xpCount').innerText = userXP; checkAndSetRank(userXP); 
         }
 
         let timerInterval; let timeLeft = 0; let isTimerRunning = false;
-        document.addEventListener("visibilitychange", function() {
-            if (document.hidden && isTimerRunning) { alert("🚨 PENALTY! Focus ke waqt tab change kyu kiya? -50 XP!"); updateXP(-50); resetMyTimer(); }
-        });
-
         document.getElementById('startTimerBtn').addEventListener('click', () => {
             let mins = parseInt(document.getElementById('customMinutes').value);
             if(isNaN(mins) || mins <= 0) return alert("Sahi time daal!");
@@ -312,13 +310,11 @@
                     document.getElementById('timeDisplay').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
                 } else {
                     clearInterval(timerInterval); isTimerRunning = false;
-                    alert("Focus Complete! +50 XP mil gaye!"); updateXP(50);
+                    alert("Focus Complete! +50 XP!"); updateXP(50);
                 }
             }, 1000);
         });
-
-        document.getElementById('resetTimerBtn').addEventListener('click', resetMyTimer);
-        function resetMyTimer() { clearInterval(timerInterval); isTimerRunning = false; document.getElementById('timeDisplay').innerText = "00:00"; }
+        document.getElementById('resetTimerBtn').addEventListener('click', () => { clearInterval(timerInterval); isTimerRunning = false; document.getElementById('timeDisplay').innerText = "00:00"; });
         
         // PWA Init
         if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
