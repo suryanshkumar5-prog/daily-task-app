@@ -1,30 +1,37 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+    <meta charset="UTF-8">
+    <title>Cortex Tasker</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00ff00">
-    <meta charset="UTF-8">
-    <title>Alert Hub</title>
+    <meta name="apple-mobile-web-app-title" content="Cortex">
+    <meta name="application-name" content="Cortex">
     <style>
-        body { font-family: 'Courier New', Courier, monospace; background: #050505; color: #00ff00; text-align: center; padding: 20px; margin: 0; }
-        .container { background: #111; padding: 25px; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #00ff00; box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); }
-        h1 { text-shadow: 0 0 10px #00ff00; letter-spacing: 2px; }
+        /* CSS Variables - Yeh rang rank ke hisaab se badlega */
+        :root {
+            --theme-color: #00ff00; 
+        }
 
-        .stats-board { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px dashed #00ff00; margin-bottom: 20px; font-weight: bold; font-size: 1.2em; }
+        body { font-family: 'Courier New', Courier, monospace; background: #050505; color: var(--theme-color); text-align: center; padding: 20px; margin: 0; transition: color 0.5s; }
+        .container { background: #111; padding: 25px; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid var(--theme-color); box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); transition: border-color 0.5s, box-shadow 0.5s; }
+        h1 { text-shadow: 0 0 10px var(--theme-color); letter-spacing: 2px; }
+        
+        .stats-board { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px dashed var(--theme-color); margin-bottom: 20px; font-weight: bold; font-size: 1.2em; display: flex; justify-content: space-around; transition: border-color 0.5s; }
         .xp-text { color: #f1c40f; text-shadow: 0 0 5px #f1c40f; }
-
+        
         .timer-box { background: #1a0000; border: 1px solid #ff0000; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         #timeDisplay { font-size: 2.5em; font-weight: bold; display: block; margin-bottom: 10px; color: #ff4444; }
         .timer-btn { background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin: 5px; }
         .timer-btn:hover { background: #ff4444; color: #000; }
-
-        input, textarea { padding: 12px; width: 90%; margin: 8px 0; background: #000; border: 1px solid #00ff00; color: #00ff00; border-radius: 4px; outline: none; box-sizing: border-box; }
-        button.add-btn { background: #00ff00; color: #000; border: none; padding: 12px; width: 90%; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1.1em; text-transform: uppercase; margin-top: 10px; transition: 0.3s;}
-        button.add-btn:hover { box-shadow: 0 0 15px #00ff00; }
-
+        
+        input, textarea { padding: 12px; width: 90%; margin: 8px 0; background: #000; border: 1px solid var(--theme-color); color: var(--theme-color); border-radius: 4px; outline: none; box-sizing: border-box; transition: border-color 0.5s; }
+        button.add-btn { background: var(--theme-color); color: #000; border: none; padding: 12px; width: 90%; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 1.1em; text-transform: uppercase; margin-top: 10px; transition: 0.3s;}
+        button.add-btn:hover { opacity: 0.8; box-shadow: 0 0 15px var(--theme-color); }
+        
         ul { list-style: none; padding: 0; text-align: left; }
-        li { background: #111; padding: 15px; margin-top: 10px; border: 1px solid #333; border-left: 5px solid #00ff00; display: flex; justify-content: space-between; align-items: center; }
-
+        li { background: #111; padding: 15px; margin-top: 10px; border: 1px solid #333; border-left: 5px solid var(--theme-color); display: flex; justify-content: space-between; align-items: center; transition: border-color 0.5s; }
+        
         .login-box { margin-top: 100px; padding: 40px; }
         #loginBtn { background: #4285F4; color: white; border: none; padding: 15px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; font-weight: bold; box-shadow: 0 4px 10px rgba(66, 133, 244, 0.4); }
         #userInfo { font-size: 0.9em; color: #aaa; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -33,219 +40,235 @@
 </head>
 <body>
 
-<div id="loginScreen" class="container login-box">
-    <h1>[ SYSTEM_LOCKED ]</h1>
-    <p style="color: #888; margin-bottom: 30px;">Access restricted. Identity verification required.</p>
-    <button id="loginBtn">🛡️ Login with Google</button>
-</div>
-
-<div id="appScreen" class="container" style="display: none;">
-    <h1>[ Alert Hub ]</h1>
-
-    <div id="userInfo">
-        <span>Agent: <b id="userName" style="color:#00ff00;"></b></span>
-        <button id="logoutBtn">Logout</button>
+    <div id="loginScreen" class="container login-box">
+        <h1>[ SYSTEM_LOCKED ]</h1>
+        <p style="color: #888; margin-bottom: 30px;">Access restricted. Identity verification required.</p>
+        <button id="loginBtn">🛡️ Login with Google</button>
     </div>
 
-    <div class="stats-board">
-        <div>TOTAL XP: <span id="xpCount" class="xp-text">0</span></div>
+    <div id="appScreen" class="container" style="display: none;">
+        <h1>[ CORTEX_OS_ONLINE ]</h1>
+        
+        <div id="userInfo">
+            <span>Agent: <b id="userName" style="color:var(--theme-color);"></b></span>
+            <button id="logoutBtn">Logout</button>
+        </div>
+        
+        <div class="stats-board">
+            <div>XP: <span id="xpCount" class="xp-text">0</span></div>
+            <div>RANK: <span id="rankTitle">Novice</span></div>
+        </div>
+
+        <div class="timer-box">
+            <input type="number" id="customMinutes" placeholder="Minutes..." style="width: 120px; text-align: center; font-size: 1.2em; border-color: #ff4444; color: #ff4444;">
+            <span id="timeDisplay">00:00</span>
+            <button class="timer-btn" id="startTimerBtn">▶ Start Focus</button>
+            <button class="timer-btn" id="resetTimerBtn">⏹ Reset</button>
+            <div style="color: #ffaa00; font-size: 0.8em; margin-top: 10px;">⚠️ WARNING: Tab changed = 50 XP Penalty!</div>
+        </div>
+        
+        <input type="text" id="taskInput" placeholder="> Enter new mission objective...">
+        <button class="add-btn" id="addTaskBtn">Deploy Task</button>
+        <ul id="taskList"></ul>
+
+        <div style="margin-top: 40px; border-top: 2px dashed var(--theme-color); padding-top: 20px;">
+            <h2>🧠 IDEA VAULT</h2>
+            <textarea id="ideaInput" rows="2" placeholder="> Dump crazy experiments & vlog ideas..."></textarea>
+            <button class="add-btn" id="addIdeaBtn" style="background: #9b59b6; color: white;">Save Idea to Cloud</button>
+            <ul id="ideaList"></ul>
+        </div>
     </div>
 
-    <div class="timer-box">
-        <input type="number" id="customMinutes" placeholder="Minutes..." style="width: 120px; text-align: center; font-size: 1.2em;">
-        <span id="timeDisplay">00:00</span>
-        <button class="timer-btn" id="startTimerBtn">▶ Start Focus</button>
-        <button class="timer-btn" id="resetTimerBtn">⏹ Reset</button>
-        <div style="color: #ffaa00; font-size: 0.8em; margin-top: 10px;">⚠️ WARNING: Tab changed = 50 XP Penalty!</div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    <input type="text" id="taskInput" placeholder="> Enter new mission objective...">
-    <button class="add-btn" id="addTaskBtn">Deploy Task</button>
-    <ul id="taskList"></ul>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc",
+            authDomain: "suryansh-pro-tasker.firebaseapp.com",
+            projectId: "suryansh-pro-tasker",
+            storageBucket: "suryansh-pro-tasker.firebasestorage.app",
+            messagingSenderId: "264919463662",
+            appId: "1:264919463662:web:52fbe3e64000827ba065ff"
+        };
 
-    <div style="margin-top: 40px; border-top: 2px dashed #00ff00; padding-top: 20px;">
-        <h2>🧠 IDEA VAULT</h2>
-        <textarea id="ideaInput" rows="2" placeholder="> Dump crazy experiments & vlog ideas..."></textarea>
-        <button class="add-btn" id="addIdeaBtn" style="background: #9b59b6; color: white;">Save Idea to Cloud</button>
-        <ul id="ideaList"></ul>
-    </div>
-</div>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
 
-<script type="module">
-    // 1. Firebase Imports
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        let currentUser = null;
+        let userXP = 0;
 
-    // 2. Tere Firebase API Keys
-    const firebaseConfig = {
-        apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc",
-        authDomain: "suryansh-pro-tasker.firebaseapp.com",
-        projectId: "suryansh-pro-tasker",
-        storageBucket: "suryansh-pro-tasker.firebasestorage.app",
-        messagingSenderId: "264919463662",
-        appId: "1:264919463662:web:52fbe3e64000827ba065ff",
-        measurementId: "G-R49FNEDK6M"
-    };
+        // 🏆 RANK SYSTEM FUNCTION
+        function checkAndSetRank(xp) {
+            let rankName = "Novice";
+            let color = "#00ff00"; // Hacker Green
 
-    // 3. System On Karna
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
+            if (xp >= 100 && xp < 500) {
+                rankName = "Pro Coder";
+                color = "#00bfff"; // Sky Blue
+            } else if (xp >= 500 && xp < 1000) {
+                rankName = "Master Creator";
+                color = "#9b59b6"; // Purple
+            } else if (xp >= 1000) {
+                rankName = "Code Ninja";
+                color = "#ff003c"; // Neon Red
+            }
 
-    let currentUser = null;
-    let userXP = 0;
-
-    // --- AUTHENTICATION (LOGIN/LOGOUT) ---
-    document.getElementById('loginBtn').addEventListener('click', () => {
-        signInWithPopup(auth, provider).catch(error => alert("Login Error: " + error.message));
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        signOut(auth);
-    });
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-            document.getElementById('loginScreen').style.display = "none";
-            document.getElementById('appScreen').style.display = "block";
-            document.getElementById('userName').innerText = user.displayName;
-            loadCloudData(); // Jab login ho jaye, data mangwao
-        } else {
-            currentUser = null;
-            document.getElementById('loginScreen').style.display = "block";
-            document.getElementById('appScreen').style.display = "none";
+            document.getElementById('rankTitle').innerText = rankName;
+            document.documentElement.style.setProperty('--theme-color', color);
+            
+            // Meta theme color update for mobile status bar
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', color);
         }
-    });
 
-    // --- CLOUD DATABASE LOGIC ---
-    function loadCloudData() {
-        // Tasks load karna
-        const q = query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc"));
-        onSnapshot(q, (snapshot) => {
-            const taskList = document.getElementById('taskList');
-            taskList.innerHTML = "";
-            snapshot.forEach((docSnap) => {
-                let task = docSnap.data();
-                let li = document.createElement('li');
-                li.innerHTML = `
-                        <span>${task.text}</span>
-                        <button onclick="completeTask('${docSnap.id}')" style="background:#00ff00; color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold; border-radius:3px;">✔ DONE</button>
-                    `;
-                taskList.appendChild(li);
-            });
+        // --- AUTHENTICATION ---
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            signInWithPopup(auth, provider).catch(error => alert("Login Error: " + error.message));
         });
 
-        // Ideas load karna
-        onSnapshot(collection(db, "users", currentUser.uid, "ideas"), (snapshot) => {
-            const ideaList = document.getElementById('ideaList');
-            ideaList.innerHTML = "";
-            snapshot.forEach((docSnap) => {
-                let idea = docSnap.data();
-                let li = document.createElement('li');
-                li.style.borderLeft = "5px solid #9b59b6";
-                li.innerHTML = `
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginScreen').style.display = "none";
+                document.getElementById('appScreen').style.display = "block";
+                document.getElementById('userName').innerText = user.displayName;
+                loadCloudData();
+            } else {
+                currentUser = null;
+                document.getElementById('loginScreen').style.display = "block";
+                document.getElementById('appScreen').style.display = "none";
+            }
+        });
+
+        // --- LOAD DATA ---
+        function loadCloudData() {
+            const q = query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc"));
+            onSnapshot(q, (snapshot) => {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = "";
+                snapshot.forEach((docSnap) => {
+                    let task = docSnap.data();
+                    let li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${task.text}</span>
+                        <button onclick="completeTask('${docSnap.id}')" style="background:var(--theme-color); color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold; border-radius:3px;">✔ DONE</button>
+                    `;
+                    taskList.appendChild(li);
+                });
+            });
+
+            onSnapshot(collection(db, "users", currentUser.uid, "ideas"), (snapshot) => {
+                const ideaList = document.getElementById('ideaList');
+                ideaList.innerHTML = "";
+                snapshot.forEach((docSnap) => {
+                    let idea = docSnap.data();
+                    let li = document.createElement('li');
+                    li.style.borderLeft = "5px solid #9b59b6";
+                    li.innerHTML = `
                         <span>${idea.text}</span>
                         <button onclick="deleteIdea('${docSnap.id}')" style="background:#e74c3c; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:3px;">X</button>
                     `;
-                ideaList.appendChild(li);
+                    ideaList.appendChild(li);
+                });
             });
-        });
 
-        // XP load karna
-        let savedXP = localStorage.getItem('suryanshXP_' + currentUser.uid);
-        userXP = savedXP ? parseInt(savedXP) : 0;
-        document.getElementById('xpCount').innerText = userXP;
-    }
-
-    // Add Task to Firebase
-    document.getElementById('addTaskBtn').addEventListener('click', async () => {
-        const text = document.getElementById('taskInput').value;
-        if (!text || !currentUser) return;
-
-        await addDoc(collection(db, "users", currentUser.uid, "tasks"), {
-            text: text,
-            createdAt: serverTimestamp()
-        });
-        document.getElementById('taskInput').value = "";
-    });
-
-    // Add Idea to Firebase
-    document.getElementById('addIdeaBtn').addEventListener('click', async () => {
-        const text = document.getElementById('ideaInput').value;
-        if (!text || !currentUser) return;
-
-        await addDoc(collection(db, "users", currentUser.uid, "ideas"), { text: text });
-        document.getElementById('ideaInput').value = "";
-    });
-
-    // Complete & Delete Functions (Global)
-    window.completeTask = async (taskId) => {
-        updateXP(10); // Task done = 10 XP
-        await deleteDoc(doc(db, "users", currentUser.uid, "tasks", taskId));
-    };
-
-    window.deleteIdea = async (ideaId) => {
-        await deleteDoc(doc(db, "users", currentUser.uid, "ideas", ideaId));
-    };
-
-    // --- XP & PENALTY LOGIC ---
-    function updateXP(amount) {
-        userXP += amount;
-        if (userXP < 0) userXP = 0;
-        localStorage.setItem('suryanshXP_' + currentUser.uid, userXP);
-        document.getElementById('xpCount').innerText = userXP;
-    }
-
-    let timerInterval;
-    let timeLeft = 0;
-    let isTimerRunning = false;
-
-    document.addEventListener("visibilitychange", function() {
-        if (document.hidden && isTimerRunning) {
-            alert("🚨 PENALTY! Focus ke waqt tab change kyu kiya? -50 XP!");
-            updateXP(-50);
-            resetMyTimer();
+            let savedXP = localStorage.getItem('suryanshXP_' + currentUser.uid);
+            userXP = savedXP ? parseInt(savedXP) : 0;
+            document.getElementById('xpCount').innerText = userXP;
+            checkAndSetRank(userXP); // Set rank on load
         }
-    });
 
-    document.getElementById('startTimerBtn').addEventListener('click', () => {
-        let mins = parseInt(document.getElementById('customMinutes').value);
-        if(isNaN(mins) || mins <= 0) return alert("Sahi time daal!");
+        // --- ACTIONS ---
+        document.getElementById('addTaskBtn').addEventListener('click', async () => {
+            const text = document.getElementById('taskInput').value;
+            if (!text || !currentUser) return;
+            await addDoc(collection(db, "users", currentUser.uid, "tasks"), {
+                text: text,
+                createdAt: serverTimestamp()
+            });
+            document.getElementById('taskInput').value = "";
+        });
 
-        clearInterval(timerInterval);
-        timeLeft = mins * 60;
-        isTimerRunning = true;
+        document.getElementById('addIdeaBtn').addEventListener('click', async () => {
+            const text = document.getElementById('ideaInput').value;
+            if (!text || !currentUser) return;
+            await addDoc(collection(db, "users", currentUser.uid, "ideas"), { text: text });
+            document.getElementById('ideaInput').value = "";
+        });
 
-        timerInterval = setInterval(() => {
-            if(timeLeft > 0) {
-                timeLeft--;
-                let m = Math.floor(timeLeft / 60);
-                let s = timeLeft % 60;
-                document.getElementById('timeDisplay').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
-            } else {
-                clearInterval(timerInterval);
-                isTimerRunning = false;
-                alert("Focus Complete! +20 XP mil gaye!");
-                updateXP(20);
+        window.completeTask = async (taskId) => {
+            updateXP(25); // 🚀 Task complete karne par 25 XP
+            await deleteDoc(doc(db, "users", currentUser.uid, "tasks", taskId));
+        };
+
+        window.deleteIdea = async (ideaId) => {
+            await deleteDoc(doc(db, "users", currentUser.uid, "ideas", ideaId));
+        };
+
+        // --- XP UPDATE ---
+        function updateXP(amount) {
+            userXP += amount;
+            if (userXP < 0) userXP = 0;
+            localStorage.setItem('suryanshXP_' + currentUser.uid, userXP);
+            document.getElementById('xpCount').innerText = userXP;
+            checkAndSetRank(userXP); // Update UI automatically
+        }
+
+        // --- TIMER & PENALTY ---
+        let timerInterval;
+        let timeLeft = 0;
+        let isTimerRunning = false;
+
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden && isTimerRunning) {
+                alert("🚨 PENALTY! Focus ke waqt tab change kyu kiya? -50 XP!");
+                updateXP(-50);
+                resetMyTimer();
             }
-        }, 1000);
-    });
+        });
 
-    document.getElementById('resetTimerBtn').addEventListener('click', resetMyTimer);
+        document.getElementById('startTimerBtn').addEventListener('click', () => {
+            let mins = parseInt(document.getElementById('customMinutes').value);
+            if(isNaN(mins) || mins <= 0) return alert("Sahi time daal!");
+            
+            clearInterval(timerInterval);
+            timeLeft = mins * 60;
+            isTimerRunning = true;
+            
+            timerInterval = setInterval(() => {
+                if(timeLeft > 0) {
+                    timeLeft--;
+                    let m = Math.floor(timeLeft / 60);
+                    let s = timeLeft % 60;
+                    document.getElementById('timeDisplay').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+                } else {
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                    alert("Focus Complete! +50 XP mil gaye!");
+                    updateXP(50);
+                }
+            }, 1000);
+        });
 
-    function resetMyTimer() {
-        clearInterval(timerInterval);
-        isTimerRunning = false;
-        document.getElementById('timeDisplay').innerText = "00:00";
-    }
-</script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-            .then(() => console.log("Suryansh OS App Ready!"));
-    }
-</script>
+        document.getElementById('resetTimerBtn').addEventListener('click', resetMyTimer);
+
+        function resetMyTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            document.getElementById('timeDisplay').innerText = "00:00";
+        }
+        
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 </body>
 </html>
