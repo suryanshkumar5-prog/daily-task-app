@@ -83,9 +83,9 @@
 
         <div class="header-area">
             <img id="userAvatar" class="avatar" src="" alt="Avatar">
-            <h1>[ CORTEX_OS_V9.1 ]</h1>
+            <h1>[ CORTEX_OS_V9.2 ]</h1>
         </div>
-        <div class="quote-box" id="dailyQuote">Loading protocol...</div>
+        <div class="quote-box" id="dailyQuote">System booting...</div>
         
         <progress id="xpProgress" value="0" max="1000" title="XP to next Rank"></progress>
 
@@ -169,7 +169,7 @@
                 <button class="action-btn" id="ttsBtn">🔊 TTS Read</button>
             </div>
 
-            <div id="aiOutput">> System Online. Engine Updated to Gemini 2.5 Flash. Ready.</div>
+            <div id="aiOutput">> System Online. Engine Updated. Ready.</div>
             <div style="text-align: right; font-size: 0.8em; color: #555; margin-bottom: 5px;">Word Count: <span id="wordCount">0</span></div>
             
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
@@ -184,16 +184,32 @@
     </div>
 
     <script type="module">
+        // TERA FIREBASE CODE (Correctly Formatted for Web Module)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
-        const firebaseConfig = { apiKey: "AIzaSyAiWDo57CVVBYc8hd2lGREac3mJ8qd7-0U", authDomain: "suryansh-pro-tasker.firebaseapp.com", projectId: "suryansh-pro-tasker", storageBucket: "suryansh-pro-tasker.firebasestorage.app", messagingSenderId: "264919463662", appId: "1:264919463662:web:52fbe3e64000827ba065ff" };
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const provider = new GoogleAuthProvider();
+        // TERA EXACT FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc",
+            authDomain: "suryansh-pro-tasker.firebaseapp.com",
+            projectId: "suryansh-pro-tasker",
+            storageBucket: "suryansh-pro-tasker.firebasestorage.app",
+            messagingSenderId: "264919463662",
+            appId: "1:264919463662:web:52fbe3e64000827ba065ff",
+            measurementId: "G-R49FNEDK6M"
+        };
         
-        // 🚀 API ENGINE FIXED: USING GEMINI 2.5 FLASH
-        const genAI = new GoogleGenerativeAI("AIzaSyBgckxy4wCEBk77BnrbEIvfXOG4hT3JBak");
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app); 
+        const auth = getAuth(app); 
+        const db = getFirestore(app); 
+        const provider = new GoogleAuthProvider();
+        
+        // 🚀 API ENGINE: DHYAN SE! YAHAN NAYI GEMINI KEY DAALNI HAI!
+        const genAI = new GoogleGenerativeAI("YOUR_NEW_GEMINI_API_KEY_HERE");
 
         let currentUser = null; let userXP = 0; let focusMins = 0; let waterCount = 0; let activeTasksCount = 0;
 
@@ -230,7 +246,7 @@
 
         document.getElementById('waterBtn').addEventListener('click', () => { waterCount++; document.getElementById('waterCount').innerText = waterCount; updateXP(5); });
 
-        // 🎤 VOICE RECOGNITION (MIC RESTORED)
+        // 🎤 VOICE RECOGNITION
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         function setupMic(btnId, inputId) {
             if (!SpeechRecognition) return;
@@ -246,14 +262,8 @@
                 isRecording = true;
             });
 
-            recognition.onresult = (event) => {
-                document.getElementById(inputId).value += event.results[0][0].transcript;
-            };
-            recognition.onend = () => {
-                document.getElementById(btnId).style.background = "transparent";
-                document.getElementById(inputId).placeholder = "> Prompt...";
-                isRecording = false;
-            };
+            recognition.onresult = (event) => { document.getElementById(inputId).value += event.results[0][0].transcript; };
+            recognition.onend = () => { document.getElementById(btnId).style.background = "transparent"; document.getElementById(inputId).placeholder = "> Prompt..."; isRecording = false; };
         }
         setupMic('aiMicBtn', 'aiInput');
         setupMic('taskMicBtn', 'taskInput');
@@ -272,7 +282,6 @@
             let typingInterval = setInterval(() => { out.innerText = out.innerText.endsWith("...") ? "> Cortex thinking" : out.innerText + "."; }, 500);
             
             try {
-                // Engine Call - Fixed to gemini-2.5-flash
                 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); 
                 let res = base64Image ? await model.generateContent([q || "Analyze this image accurately.", {inlineData:{data:base64Image, mimeType:mimeType}}]) : await model.generateContent(q);
                 clearInterval(typingInterval);
@@ -286,9 +295,7 @@
         document.getElementById('copyAiBtn').addEventListener('click', () => { navigator.clipboard.writeText(latestAiText); alert("AI Response Copied!"); });
 
         // AUTH
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            signInWithPopup(auth, provider).catch(error => { alert("🚨 KHADUS GURU ALERT: " + error.message); });
-        });
+        document.getElementById('loginBtn').addEventListener('click', () => { signInWithPopup(auth, provider).catch(error => { alert("🚨 KHADUS GURU ALERT: " + error.message); }); });
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
         onAuthStateChanged(auth, (user) => {
