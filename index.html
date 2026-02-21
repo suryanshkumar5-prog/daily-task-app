@@ -3,106 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cortex OS Pro - Mobile Optimized</title>
+    <title>Cortex OS v10 - Ultimate Edition</title>
     <link rel="manifest" href="manifest.json">
     <script type="importmap">
       { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
     </script>
     <style>
-        :root { --theme-color: #00ff00; }
-        body { font-family: 'Courier New', monospace; background: #050505; color: var(--theme-color); text-align: center; margin: 0; padding: 10px; transition: 0.5s; }
-        .container { background: #111; padding: 20px; border-radius: 10px; max-width: 1200px; margin: auto; border: 1px solid var(--theme-color); box-shadow: 0 0 20px rgba(0,255,0,0.2); }
+        :root { --theme-color: #00ff00; --bg-dark: #050505; --panel-bg: #111; }
+        body { font-family: 'Courier New', monospace; background: var(--bg-dark); color: var(--theme-color); text-align: center; margin: 0; padding: 10px; transition: 0.5s; overflow-x: hidden; }
         
         /* THEMES */
         body.matrix-mode { background: #000 url('https://i.pinimg.com/originals/15/4a/c9/154ac98fba50a3cc4670cde5d233e7e2.gif') center/cover fixed; }
-        body.gamer-mode .container { animation: rgbGlow 3s infinite; }
-        @keyframes rgbGlow { 0% { border-color: #ff0000; } 33% { border-color: #00ff00; } 66% { border-color: #0000ff; } 100% { border-color: #ff0000; } }
+        body.gamer-mode { animation: rgbGlow 5s infinite; }
+        @keyframes rgbGlow { 0% { border: 2px solid #ff0000; } 33% { border: 2px solid #00ff00; } 66% { border: 2px solid #0000ff; } 100% { border: 2px solid #ff0000; } }
+        body.ghost-mode { filter: blur(8px) grayscale(1); pointer-events: none; }
 
+        .container { background: var(--panel-bg); padding: 20px; border-radius: 12px; max-width: 1200px; margin: auto; border: 1px solid var(--theme-color); box-shadow: 0 0 25px rgba(0,255,0,0.1); }
+        
+        /* TOP HUD */
+        .hud-bar { display: flex; justify-content: space-between; font-size: 0.8em; margin-bottom: 15px; background: #000; padding: 10px; border-radius: 5px; border-bottom: 2px solid var(--theme-color); }
+        
         /* BUTTONS */
-        .action-btn { background: transparent; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 10px 15px; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.3s; }
-        .action-btn:hover { background: var(--theme-color); color: #000; }
-        
-        /* AI LAUNCH BUTTON */
-        #launchAiBtn { background: #00bfff; color: #000; font-size: 1.2em; padding: 15px 30px; margin: 20px 0; border: none; box-shadow: 0 0 15px #00bfff; }
+        .btn { background: transparent; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 8px 12px; cursor: pointer; border-radius: 4px; font-family: 'Courier New'; font-weight: bold; transition: 0.2s; margin: 2px; }
+        .btn:hover { background: var(--theme-color); color: #000; box-shadow: 0 0 10px var(--theme-color); }
+        #launchAiBtn { background: #00bfff; color: #000; font-size: 1.2em; padding: 15px; width: 100%; border: none; margin: 20px 0; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        /* FULLSCREEN MODAL (POP-UP) */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow-y: auto; }
-        .modal-content { background: #001a33; border: 2px solid #00bfff; width: 95%; max-width: 900px; margin: 20px auto; padding: 20px; border-radius: 10px; text-align: left; }
-        .close-btn { color: #ff4444; float: right; font-size: 2em; cursor: pointer; font-weight: bold; }
+        /* PANELS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
+        .panel { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; }
         
-        /* AI CONSOLE INSIDE MODAL */
-        #aiOutput { background: #000; border: 1px solid #00bfff; padding: 15px; border-radius: 5px; height: 350px; overflow-y: auto; color: #fff; line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap; font-size: 1.1em; }
-        .ai-input-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        #aiInput { flex-grow: 1; padding: 15px; background: #000; border: 1px solid #00bfff; color: #fff; font-size: 1.1em; }
-        
-        /* HIDING CONTENT WHEN LOCKED */
-        #appScreen { display: none; }
-        
-        /* KANBAN & STATS */
-        .stats-board { display: flex; justify-content: space-around; flex-wrap: wrap; padding: 15px; border: 1px dashed var(--theme-color); margin: 20px 0; }
-        .kanban { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
-        .kanban-col { background: #1a1a1a; padding: 15px; border-radius: 8px; min-height: 200px; }
-        ul { list-style: none; padding: 0; text-align: left; }
-        li { background: #0a0a0a; padding: 12px; margin-top: 8px; border-left: 5px solid var(--theme-color); display: flex; justify-content: space-between; }
+        /* AI MODAL */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); }
+        .modal-content { width: 95%; max-width: 900px; margin: 5% auto; text-align: left; }
+        #aiOutput { background: #000; border: 1px solid #00bfff; padding: 20px; height: 400px; overflow-y: auto; color: #fff; border-radius: 5px; font-size: 1.1em; line-height: 1.6; }
+
+        /* SCRATCHPAD */
+        textarea { width: 100%; background: #000; color: #f1c40f; border: 1px solid #f1c40f; padding: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen" class="container" style="margin-top: 100px;">
-        <h1>[ CORTEX_LOCKED ]</h1>
-        <button class="action-btn" id="loginBtn" style="background:#4285F4; color:white; border:none; padding: 15px 30px; font-size: 1.1em;">🛡️ Login via Google</button>
+    <div id="loginScreen" class="container" style="margin-top:150px;">
+        <h1>[ CORTEX_V10_LOCKED ]</h1>
+        <button class="btn" id="loginBtn" style="font-size:1.5em; padding:20px;">🛡️ DECRYPT & LOGIN</button>
     </div>
 
-    <div id="appScreen" class="container">
-        <h1>[ CORTEX_OS_V9.3 ]</h1>
-        
-        <div class="stats-board">
-            <div>XP: <span id="xpCount">0</span></div>
-            <div>STREAK: <span id="streakCount">0</span></div>
-            <div>FOCUS: <span id="lifeFocus">0</span>m</div>
+    <div id="appScreen" class="container" style="display:none;">
+        <div class="hud-bar">
+            <div id="hud-clock">00:00:00</div>
+            <div id="hud-stats">XP: <span id="xpCount">0</span> | Rank: <span id="rank">Novice</span></div>
+            <div id="hud-battery">BAT: --%</div>
         </div>
 
         <div class="dock">
-            <button id="themeBtn" class="action-btn">🕶️ Matrix Mode</button>
-            <button id="rgbBtn" class="action-btn">🌈 RGB Mode</button>
-            <button id="logoutBtn" class="action-btn" style="color:#ff4444; border-color:#ff4444;">🚪 Logout</button>
+            <button class="btn" onclick="toggleTheme('matrix')">🕶️ Matrix</button>
+            <button class="btn" onclick="toggleTheme('gamer')">🌈 RGB</button>
+            <button class="btn" onclick="toggleGhost()">👻 Ghost</button>
+            <button class="btn" id="waterBtn">💧 Water (<span id="waterCount">0</span>)</button>
+            <button class="btn" id="logoutBtn" style="border-color: red; color: red;">🚪 EXIT</button>
         </div>
 
-        <button id="launchAiBtn" class="action-btn">🧠 LAUNCH CORTEX AI</button>
+        <button id="launchAiBtn">🧠 INITIALIZE CORTEX AI (FULL SCREEN)</button>
 
-        <div class="kanban">
-            <div class="kanban-col">
-                <h3>💡 IDEAS</h3>
-                <input type="text" id="taskInput" placeholder="New Task..." style="width:70%; padding:5px;">
-                <button class="action-btn" id="addTaskBtn">+</button>
-                <ul id="ideaCol"></ul>
+        <div class="grid">
+            <div class="panel" style="border-color: #ff4444;">
+                <h3 style="color:#ff4444;">⏲️ ZEN TIMER</h3>
+                <h1 id="timeDisplay">25:00</h1>
+                <button class="btn" id="startTimer">START</button>
+                <button class="btn" id="lofiBtn">🎵 LOFI ON</button>
+                <audio id="lofiAudio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"></audio>
             </div>
-            <div class="kanban-col"><h3>🎥 ACTION</h3><ul id="actionCol"></ul></div>
-            <div class="kanban-col"><h3>🎬 DONE</h3><ul id="postCol"></ul></div>
+
+            <div class="panel" style="border-color: #f1c40f;">
+                <h3 style="color:#f1c40f;">📝 AUTO-SAVER</h3>
+                <textarea id="scratchPad" rows="5" placeholder="Raat ke raaz yahan likho..."></textarea>
+            </div>
+
+            <div class="panel" style="border-color: #00bfff;">
+                <h3 style="color:#00bfff;">👿 KHADUS ROUTINE</h3>
+                <input type="text" id="routineInput" placeholder="Task..." style="width:60%;">
+                <button class="btn" id="addRoutine">+</button>
+                <ul id="routineList"></ul>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="panel"><h3>💡 IDEAS</h3><input type="text" id="taskInput" placeholder="New Task..."><button class="btn" id="addTask">+</button><ul id="ideaCol"></ul></div>
+            <div class="panel"><h3>🎥 ACTION</h3><ul id="actionCol"></ul></div>
+            <div class="panel"><h3>🎬 DONE</h3><ul id="postCol"></ul></div>
         </div>
     </div>
 
     <div id="aiModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" id="closeAi">&times; CLOSE</span>
-            <h2 style="color:#00bfff;">🧠 Cortex AI Terminal</h2>
-            
-            <div id="aiOutput">> Waiting for command...</div>
-            
-            <div class="ai-input-group">
-                <input type="text" id="aiInput" placeholder="Type your question here...">
-                <button id="aiMicBtn" class="action-btn" style="font-size:1.5em;">🎤</button>
-                <button id="askAiBtn" class="action-btn" style="background:#00bfff; color:#000; padding:0 20px;">ASK AI</button>
+            <button class="btn" id="closeAi" style="float:right; color:red;">[X] CLOSE TERMINAL</button>
+            <h2 style="color:#00bfff;">🧠 CORTEX_AI_CORE v10.0</h2>
+            <div id="aiOutput">> Waiting for input...</div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <input type="text" id="aiInput" style="flex-grow:1; padding:15px; background:#000; color:#fff; border:1px solid #00bfff;" placeholder="Ask anything, Guru ji is listening...">
+                <button class="btn" id="aiMicBtn">🎤</button>
+                <button class="btn" id="askAiBtn" style="background:#00bfff; color:#000;">SEND</button>
             </div>
-            
-            <div style="margin-top: 15px; display: flex; gap: 10px;">
-                <button class="action-btn" id="copyAiBtn">📋 Copy</button>
-                <button class="action-btn" id="ttsBtn">🔊 Read Aloud</button>
+            <div style="margin-top:10px;">
+                <button class="btn" id="ttsBtn">🔊 Read</button>
+                <button class="btn" id="copyAi">📋 Copy</button>
             </div>
         </div>
     </div>
-
-    <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -110,64 +118,17 @@
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
-        // CONFIG (Tera Naya Database Config)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc",
-            authDomain: "suryansh-pro-tasker.firebaseapp.com",
-            projectId: "suryansh-pro-tasker",
-            storageBucket: "suryansh-pro-tasker.firebasestorage.app",
-            messagingSenderId: "264919463662",
-            appId: "1:264919463662:web:52fbe3e64000827ba065ff"
-        };
-        
+        const firebaseConfig = { apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc", authDomain: "suryansh-pro-tasker.firebaseapp.com", projectId: "suryansh-pro-tasker", storageBucket: "suryansh-pro-tasker.firebasestorage.app", messagingSenderId: "264919463662", appId: "1:264919463662:web:52fbe3e64000827ba065ff" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
-
-        // 🚀 API KEY UPDATED AS PER YOUR REQUEST
+        
+        // 🚀 TERA NAYA GEMINI API KEY
         const genAI = new GoogleGenerativeAI("AIzaSyAkSiLwbJw2B9PIbNMlAOOXe9SdQQf7de4");
 
         let currentUser = null;
-        const playClick = () => document.getElementById('clickSound').play().catch(()=>{});
-
-        // MODAL LOGIC
-        const modal = document.getElementById("aiModal");
-        document.getElementById("launchAiBtn").onclick = () => { modal.style.display = "block"; playClick(); }
-        document.getElementById("closeAi").onclick = () => modal.style.display = "none";
-        window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
-
-        // THEMES
-        document.getElementById('themeBtn').onclick = () => document.body.classList.toggle('matrix-mode');
-        document.getElementById('rgbBtn').onclick = () => document.body.classList.toggle('gamer-mode');
-
-        // AI LOGIC
-        let latestAiText = "";
-        document.getElementById('askAiBtn').onclick = async () => {
-            const q = document.getElementById('aiInput').value;
-            const out = document.getElementById('aiOutput');
-            if(!q) return;
-            out.innerText = "> Thinking...";
-            try {
-                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-                const res = await model.generateContent(q);
-                latestAiText = res.response.text();
-                out.innerText = `> ${latestAiText}`;
-                document.getElementById('aiInput').value = "";
-            } catch(e) { out.innerText = `[ERROR]: ${e.message}`; }
-        };
-
-        // MIC LOGIC
-        const recognition = window.SpeechRecognition || window.webkitSpeechRecognition ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
-        if(recognition) {
-            recognition.lang = 'hi-IN';
-            document.getElementById('aiMicBtn').onclick = () => { recognition.start(); document.getElementById('aiInput').placeholder="Suno raha hu..."; };
-            recognition.onresult = (e) => { document.getElementById('aiInput').value = e.results[0][0].transcript; };
-            recognition.onend = () => { document.getElementById('aiInput').placeholder="Type your question here..."; };
-        }
-
-        document.getElementById('copyAiBtn').onclick = () => { navigator.clipboard.writeText(latestAiText); alert("Copied!"); };
-        document.getElementById('ttsBtn').onclick = () => { let u = new SpeechSynthesisUtterance(latestAiText); u.lang='hi-IN'; window.speechSynthesis.speak(u); };
+        let xp = 0;
 
         // AUTH
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
@@ -176,44 +137,84 @@
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 currentUser = user;
-                document.getElementById('loginScreen').style.display = "none";
-                document.getElementById('appScreen').style.display = "block";
-                loadTasks();
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appScreen').style.display = 'block';
+                syncData();
             } else {
-                currentUser = null;
-                document.getElementById('loginScreen').style.display = "block";
-                document.getElementById('appScreen').style.display = "none";
+                document.getElementById('loginScreen').style.display = 'block';
+                document.getElementById('appScreen').style.display = 'none';
             }
         });
 
-        // TASKS LOGIC
-        async function loadTasks() {
+        // AI MODAL
+        const modal = document.getElementById('aiModal');
+        document.getElementById('launchAiBtn').onclick = () => modal.style.display = 'block';
+        document.getElementById('closeAi').onclick = () => modal.style.display = 'none';
+
+        document.getElementById('askAiBtn').onclick = async () => {
+            const input = document.getElementById('aiInput').value;
+            const output = document.getElementById('aiOutput');
+            if(!input) return;
+            output.innerText = "> Fetching response from Gemini 2.5 Flash...";
+            try {
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+                const res = await model.generateContent(input);
+                output.innerText = `> ${res.response.text()}`;
+                updateXP(20);
+            } catch(e) { output.innerText = `[ERROR]: ${e.message}`; }
+        };
+
+        // TIMER
+        let timer;
+        document.getElementById('startTimer').onclick = () => {
+            let sec = 1500;
+            clearInterval(timer);
+            timer = setInterval(() => {
+                sec--;
+                let m = Math.floor(sec/60);
+                let s = sec%60;
+                document.getElementById('timeDisplay').innerText = `${m}:${s<10?'0'+s:s}`;
+                if(sec <= 0) { clearInterval(timer); alert("Focus End! +50 XP"); updateXP(50); }
+            }, 1000);
+        };
+
+        // DATA SYNC
+        function syncData() {
             onSnapshot(query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc")), (snap) => {
-                document.getElementById('ideaCol').innerHTML = "";
-                document.getElementById('actionCol').innerHTML = "";
-                document.getElementById('postCol').innerHTML = "";
+                document.getElementById('ideaCol').innerHTML = ""; document.getElementById('actionCol').innerHTML = ""; document.getElementById('postCol').innerHTML = "";
                 snap.forEach(d => {
                     const t = d.data();
                     const li = document.createElement('li');
-                    li.innerHTML = `<span>${t.text}</span> <button onclick="window.move('${d.id}', '${t.status}')">➡️</button>`;
-                    if(t.status === 'idea') document.getElementById('ideaCol').appendChild(li);
-                    else if(t.status === 'action') document.getElementById('actionCol').appendChild(li);
-                    else document.getElementById('postCol').appendChild(li);
+                    li.innerHTML = `${t.text} <button class="btn" onclick="move('${d.id}', '${t.status}')">></button>`;
+                    document.getElementById(t.status + 'Col').appendChild(li);
                 });
             });
         }
 
-        document.getElementById('addTaskBtn').onclick = async () => {
+        window.move = async (id, s) => {
+            let next = s === 'idea' ? 'action' : 'post';
+            await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: next });
+            if(next === 'post') updateXP(30);
+        };
+
+        document.getElementById('addTask').onclick = () => {
             const val = document.getElementById('taskInput').value;
-            if(!val) return;
-            await addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: val, status: 'idea', createdAt: serverTimestamp() });
+            addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: val, status: 'idea', createdAt: serverTimestamp() });
             document.getElementById('taskInput').value = "";
         };
 
-        window.move = async (id, current) => {
-            let next = current === 'idea' ? 'action' : 'post';
-            await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: next });
-        };
+        function updateXP(v) { xp += v; document.getElementById('xpCount').innerText = xp; }
+
+        // THEMES & HUD
+        window.toggleTheme = (t) => document.body.className = t + '-mode';
+        window.toggleGhost = () => document.body.classList.toggle('ghost-mode');
+        setInterval(() => document.getElementById('hud-clock').innerText = new Date().toLocaleTimeString(), 1000);
+        navigator.getBattery().then(b => document.getElementById('hud-battery').innerText = `BAT: ${Math.floor(b.level*100)}%`);
+
+        // SCRATCHPAD AUTO-SAVE
+        const pad = document.getElementById('scratchPad');
+        pad.value = localStorage.getItem('cortex_pad') || "";
+        pad.oninput = () => localStorage.setItem('cortex_pad', pad.value);
 
     </script>
 </body>
