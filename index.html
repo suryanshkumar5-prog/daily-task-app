@@ -2,396 +2,218 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>Cortex Tasker Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cortex OS Pro - Mobile Optimized</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00ff00">
-    
     <script type="importmap">
       { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
     </script>
-
     <style>
-        /* CORE & THEMES */
         :root { --theme-color: #00ff00; }
-        body { font-family: 'Courier New', Courier, monospace; background: #050505; color: var(--theme-color); text-align: center; padding: 10px; margin: 0; transition: 0.5s; overflow-x: hidden; }
-        .container { background: #111; padding: 20px; border-radius: 10px; max-width: 1200px; margin: auto; border: 1px solid var(--theme-color); box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); transition: 0.5s; position: relative; }
+        body { font-family: 'Courier New', monospace; background: #050505; color: var(--theme-color); text-align: center; margin: 0; padding: 10px; transition: 0.5s; }
+        .container { background: #111; padding: 20px; border-radius: 10px; max-width: 1200px; margin: auto; border: 1px solid var(--theme-color); box-shadow: 0 0 20px rgba(0,255,0,0.2); }
         
+        /* THEMES */
         body.matrix-mode { background: #000 url('https://i.pinimg.com/originals/15/4a/c9/154ac98fba50a3cc4670cde5d233e7e2.gif') center/cover fixed; }
-        body.matrix-mode .container { background: rgba(0, 20, 0, 0.85); border-color: #00ff00; box-shadow: 0 0 40px #00ff00; }
-        
-        @keyframes rgbGlow { 0% { border-color: #ff0000; box-shadow: 0 0 20px #ff0000; } 33% { border-color: #00ff00; box-shadow: 0 0 20px #00ff00; } 66% { border-color: #0000ff; box-shadow: 0 0 20px #0000ff; } 100% { border-color: #ff0000; box-shadow: 0 0 20px #ff0000; } }
         body.gamer-mode .container { animation: rgbGlow 3s infinite; }
-        body.panic-mode .container { filter: blur(20px); opacity: 0.2; pointer-events: none; }
+        @keyframes rgbGlow { 0% { border-color: #ff0000; } 33% { border-color: #00ff00; } 66% { border-color: #0000ff; } 100% { border-color: #ff0000; } }
 
-        .top-bar { display: flex; justify-content: space-between; background: #0a0a0a; padding: 10px 20px; border-radius: 8px; border-bottom: 2px solid var(--theme-color); margin-bottom: 15px; font-weight: bold; flex-wrap: wrap; gap: 10px; align-items: center; }
-        .radar-box { display: flex; gap: 15px; font-size: 0.9em; color: #aaa; }
-        #weatherDisplay { color: #00bfff; cursor: pointer; background: #001a33; padding: 5px; border-radius: 5px; border: 1px solid #00bfff; }
+        /* BUTTONS */
+        .action-btn { background: transparent; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 10px 15px; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.3s; }
+        .action-btn:hover { background: var(--theme-color); color: #000; }
         
-        .header-area { display: flex; justify-content: center; align-items: center; gap: 15px; }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--theme-color); display: none; }
-        h1 { letter-spacing: 2px; margin: 0; }
-        .quote-box { font-style: italic; color: #f39c12; margin-top: 10px; font-size: 0.9em; }
+        /* AI LAUNCH BUTTON */
+        #launchAiBtn { background: #00bfff; color: #000; font-size: 1.2em; padding: 15px 30px; margin: 20px 0; border: none; box-shadow: 0 0 15px #00bfff; }
 
-        .dock { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .dock button, .dock a { text-decoration: none; background: #222; color: #fff; padding: 5px 10px; border-radius: 20px; border: 1px solid var(--theme-color); font-size: 0.8em; transition: 0.3s; cursor: pointer; }
-        .dock button:hover, .dock a:hover { background: var(--theme-color); color: #000; }
-        progress { width: 100%; height: 10px; border-radius: 5px; accent-color: var(--theme-color); margin-bottom: 15px; background: #333; }
-
-        .stats-board { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px dashed var(--theme-color); margin-bottom: 20px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; align-items: center; }
-        .xp-text { color: #f1c40f; text-shadow: 0 0 5px #f1c40f; font-size: 1.3em;}
-        .stat-badge { background: #000; padding: 5px 10px; border-radius: 5px; border: 1px solid #555; font-size: 0.9em; color: #00bfff; }
-
-        .timer-box { background: #1a0000; border: 1px solid #ff0000; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        #timeDisplay { font-size: 3em; font-weight: bold; display: block; margin-bottom: 10px; color: #ff4444; }
+        /* FULLSCREEN MODAL (POP-UP) */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow-y: auto; }
+        .modal-content { background: #001a33; border: 2px solid #00bfff; width: 95%; max-width: 900px; margin: 20px auto; padding: 20px; border-radius: 10px; text-align: left; }
+        .close-btn { color: #ff4444; float: right; font-size: 2em; cursor: pointer; font-weight: bold; }
         
-        input, select, textarea { padding: 10px; margin: 5px 0; background: #000; border: 1px solid var(--theme-color); color: var(--theme-color); border-radius: 4px; outline: none; font-family: 'Courier New'; box-sizing: border-box; }
-        button.action-btn { background: transparent; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 5px 10px; cursor: pointer; border-radius: 3px; font-size: 0.8em; transition: 0.2s; }
-        button.action-btn:hover { background: var(--theme-color); color: #000; }
+        /* AI CONSOLE INSIDE MODAL */
+        #aiOutput { background: #000; border: 1px solid #00bfff; padding: 15px; border-radius: 5px; height: 350px; overflow-y: auto; color: #fff; line-height: 1.6; margin-bottom: 15px; white-space: pre-wrap; font-size: 1.1em; }
+        .ai-input-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        #aiInput { flex-grow: 1; padding: 15px; background: #000; border: 1px solid #00bfff; color: #fff; font-size: 1.1em; }
         
-        .utility-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .tool-box { background: #111; border: 1px solid #333; border-radius: 8px; padding: 15px; }
+        /* HIDING CONTENT WHEN LOCKED */
+        #appScreen { display: none; }
         
-        .kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
-        .kanban-col { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 15px; min-height: 250px; }
-        ul { list-style: none; padding: 0; margin: 0; }
-        li { background: #0a0a0a; padding: 15px; margin-top: 10px; border-left: 5px solid var(--theme-color); border-radius: 5px; display: flex; flex-direction: column; gap: 5px; text-align: left; }
-        .task-actions { display: flex; justify-content: space-between; border-top: 1px solid #222; padding-top: 10px; margin-top: 5px; }
-
-        .ai-console { margin-top: 30px; border: 2px solid #00bfff; border-radius: 8px; padding: 15px; background: #001a33; text-align: left; position: relative; }
-        #aiOutput { background: #000; border: 1px solid #00bfff; padding: 15px; border-radius: 5px; height: 200px; overflow-y: auto; color: #fff; font-size: 0.95em; white-space: pre-wrap; line-height: 1.4; margin-bottom:10px; }
-        .ai-tools { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        /* KANBAN & STATS */
+        .stats-board { display: flex; justify-content: space-around; flex-wrap: wrap; padding: 15px; border: 1px dashed var(--theme-color); margin: 20px 0; }
+        .kanban { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
+        .kanban-col { background: #1a1a1a; padding: 15px; border-radius: 8px; min-height: 200px; }
+        ul { list-style: none; padding: 0; text-align: left; }
+        li { background: #0a0a0a; padding: 12px; margin-top: 8px; border-left: 5px solid var(--theme-color); display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen" class="container" style="margin-top: 100px; padding: 40px;">
+    <div id="loginScreen" class="container" style="margin-top: 100px;">
         <h1>[ CORTEX_LOCKED ]</h1>
-        <button class="action-btn" id="loginBtn" style="background:#4285F4; color:white; font-size:1.2em; border:none; padding: 15px;">🛡️ Login via Secure Google Auth</button>
+        <button class="action-btn" id="loginBtn" style="background:#4285F4; color:white; border:none; padding: 15px 30px; font-size: 1.1em;">🛡️ Login via Google</button>
     </div>
 
-    <div id="appScreen" class="container" style="display: none;">
-        
-        <div class="top-bar">
-            <div id="weatherDisplay" onclick="changeCity()">📍 VNS | ☁️ Fetching...</div>
-            <div class="radar-box">
-                <span id="batteryStatus">🔋 --%</span>
-                <span id="networkStatus">📶 Checking...</span>
-                <span id="greetingText" style="color: #f1c40f;">Agent Active</span>
-            </div>
-            <div id="clockDisplay" style="color:#ff003c;">00:00:00</div>
-        </div>
-
-        <div class="header-area">
-            <img id="userAvatar" class="avatar" src="" alt="Avatar">
-            <h1>[ CORTEX_OS_V9.2 ]</h1>
-        </div>
-        <div class="quote-box" id="dailyQuote">System booting...</div>
-        
-        <progress id="xpProgress" value="0" max="1000" title="XP to next Rank"></progress>
-
-        <div class="dock">
-            <a href="https://studio.youtube.com" target="_blank">📺 YT Studio</a>
-            <a href="https://github.com" target="_blank">💻 GitHub</a>
-            <button id="themeBtn">🕶️ Matrix Mode</button>
-            <button id="rgbBtn">🌈 RGB Gamer</button>
-            <button id="fullScreenBtn">🔲 Fullscreen</button>
-            <button id="panicBtn" style="background: #e74c3c; color: white; border: none;">🚨 PANIC (Hide)</button>
-            <button id="exportBtn">📥 Export JSON</button>
-            <button id="clearTasksBtn" style="color: #e74c3c; border-color: #e74c3c;">🗑️ Wipe Done Tasks</button>
-            <button id="logoutBtn" style="color:#e74c3c; border-color:#e74c3c;">🚪 Logout</button>
-        </div>
+    <div id="appScreen" class="container">
+        <h1>[ CORTEX_OS_V9.3 ]</h1>
         
         <div class="stats-board">
-            <div>XP: <span id="xpCount" class="xp-text">0</span></div>
-            <div>RANK: <span id="rankTitle">Novice</span></div>
-            <div class="stat-badge">🔥 Streak: <span id="streakCount">0</span> Days</div>
-            <div class="stat-badge">🎯 Lifetime Focus: <span id="lifeFocus">0</span> Mins</div>
-            <div class="stat-badge" title="Double XP Time!">🍻 Happy Hour: <span id="happyHourStatus">🔴 OFF</span></div>
-            <button class="action-btn" id="waterBtn" style="border-color:#3498db; color:#3498db;">💧 Drink Water (<span id="waterCount">0</span>)</button>
+            <div>XP: <span id="xpCount">0</span></div>
+            <div>STREAK: <span id="streakCount">0</span></div>
+            <div>FOCUS: <span id="lifeFocus">0</span>m</div>
         </div>
 
-        <div class="timer-box">
-            <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
-                <button class="action-btn" onclick="document.getElementById('customMinutes').value=25">🍅 25m Focus</button>
-                <button class="action-btn" onclick="document.getElementById('customMinutes').value=5">☕ 5m Break</button>
-            </div>
-            <input type="number" id="customMinutes" placeholder="Min" style="width: 80px; text-align: center; border-color: #ff4444; color: #ff4444;">
-            <span id="timeDisplay">00:00</span>
-            <button class="action-btn" id="startTimerBtn" style="background:#ff4444; color:white; font-size: 1.1em;">▶ START</button>
-            <button class="action-btn" id="lofiBtn" style="background:#9b59b6; color:white;">🎵 Lofi Radio</button>
-            <audio id="lofiAudio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"></audio>
-            <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
-            <audio id="successSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
-        </div>
-        
-        <div class="utility-grid">
-            <div class="tool-box" style="border-color: #ff003c;">
-                <h2 style="color: #ff003c; margin-top: 0; font-size: 1.1em;">👿 KHADUS ROUTINE</h2>
-                <div style="display: flex; gap: 5px;">
-                    <input type="text" id="routineInput" placeholder="Task..." style="width: 50%;">
-                    <input type="time" id="routineTime" style="width: 30%;">
-                    <button class="action-btn" id="addRoutineBtn" style="background: #ff003c; color: white;">Set</button>
-                </div>
-                <ul id="routineCol"></ul>
-            </div>
-            <div class="tool-box" style="border-color: #f1c40f;">
-                <h2 style="color: #f1c40f; margin-top: 0; font-size: 1.1em;">📝 SCRATCHPAD</h2>
-                <textarea id="scratchPad" rows="4" style="width: 100%; border-color:#f1c40f;" placeholder="Quick notes (Saves instantly)..."></textarea>
-            </div>
+        <div class="dock">
+            <button id="themeBtn" class="action-btn">🕶️ Matrix Mode</button>
+            <button id="rgbBtn" class="action-btn">🌈 RGB Mode</button>
+            <button id="logoutBtn" class="action-btn" style="color:#ff4444; border-color:#ff4444;">🚪 Logout</button>
         </div>
 
-        <div class="kanban-board">
+        <button id="launchAiBtn" class="action-btn">🧠 LAUNCH CORTEX AI</button>
+
+        <div class="kanban">
             <div class="kanban-col">
-                <h2>💡 IDEAS</h2>
-                <div style="display:flex; flex-wrap: wrap; gap:5px; align-items: center;">
-                    <input type="text" id="taskInput" placeholder="> Task..." style="flex-grow:1;">
-                    <button class="action-btn" id="taskMicBtn" title="Speak Task" style="font-size: 1.2em;">🎤</button>
-                    <select id="taskPriority" style="width: 80px;">
-                        <option value="🔥">🔥 High</option>
-                        <option value="⚡">⚡ Med</option>
-                        <option value="☁️">☁️ Low</option>
-                    </select>
-                    <button class="action-btn" id="addTaskBtn" style="font-size: 1.2em;">+</button>
-                </div>
+                <h3>💡 IDEAS</h3>
+                <input type="text" id="taskInput" placeholder="New Task..." style="width:70%; padding:5px;">
+                <button class="action-btn" id="addTaskBtn">+</button>
                 <ul id="ideaCol"></ul>
             </div>
-            <div class="kanban-col"><h2>🎥 ACTION</h2><ul id="actionCol"></ul></div>
-            <div class="kanban-col"><h2>🎬 POST-PROD</h2><ul id="postCol"></ul></div>
-        </div>
-
-        <div class="ai-console">
-            <h2>🧠 CORTEX AI <span style="font-size: 0.5em; color:#888;">(Powered by Gemini 2.5 Flash Engine)</span></h2>
-            
-            <div class="ai-tools">
-                <button class="action-btn" id="vlogPromptBtn">🎥 Auto Vlog Idea</button>
-                <button class="action-btn" id="codePromptBtn">💻 Auto Code Review</button>
-                <button class="action-btn" id="copyAiBtn">📋 Copy Output</button>
-                <button class="action-btn" id="ttsBtn">🔊 TTS Read</button>
-            </div>
-
-            <div id="aiOutput">> System Online. Engine Updated. Ready.</div>
-            <div style="text-align: right; font-size: 0.8em; color: #555; margin-bottom: 5px;">Word Count: <span id="wordCount">0</span></div>
-            
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
-                <label for="imageUpload" class="action-btn" style="padding: 10px; font-size: 1.2em;">📷</label>
-                <input type="text" id="aiInput" placeholder="> Prompt..." style="flex-grow: 1; border-color: #00bfff;">
-                <button class="action-btn" id="aiMicBtn" title="Speak to AI" style="font-size: 1.2em;">🎤</button>
-                <button class="action-btn" id="askAiBtn" style="background: #00bfff; color: #000; padding: 10px 20px; font-weight: bold;">ASK</button>
-            </div>
-            <img id="imagePreview" alt="Preview">
+            <div class="kanban-col"><h3>🎥 ACTION</h3><ul id="actionCol"></ul></div>
+            <div class="kanban-col"><h3>🎬 DONE</h3><ul id="postCol"></ul></div>
         </div>
     </div>
 
+    <div id="aiModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeAi">&times; CLOSE</span>
+            <h2 style="color:#00bfff;">🧠 Cortex AI Terminal</h2>
+            
+            <div id="aiOutput">> Waiting for command...</div>
+            
+            <div class="ai-input-group">
+                <input type="text" id="aiInput" placeholder="Type your question here...">
+                <button id="aiMicBtn" class="action-btn" style="font-size:1.5em;">🎤</button>
+                <button id="askAiBtn" class="action-btn" style="background:#00bfff; color:#000; padding:0 20px;">ASK AI</button>
+            </div>
+            
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button class="action-btn" id="copyAiBtn">📋 Copy</button>
+                <button class="action-btn" id="ttsBtn">🔊 Read Aloud</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+
     <script type="module">
-        // TERA FIREBASE CODE (Correctly Formatted for Web Module)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
-        // TERA EXACT FIREBASE CONFIGURATION
+        // CONFIG (Tera Naya Database Config)
         const firebaseConfig = {
             apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc",
             authDomain: "suryansh-pro-tasker.firebaseapp.com",
             projectId: "suryansh-pro-tasker",
             storageBucket: "suryansh-pro-tasker.firebasestorage.app",
             messagingSenderId: "264919463662",
-            appId: "1:264919463662:web:52fbe3e64000827ba065ff",
-            measurementId: "G-R49FNEDK6M"
+            appId: "1:264919463662:web:52fbe3e64000827ba065ff"
         };
         
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app); 
-        const auth = getAuth(app); 
-        const db = getFirestore(app); 
+        const auth = getAuth(app);
+        const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
-        
-        // 🚀 API ENGINE: DHYAN SE! YAHAN NAYI GEMINI KEY DAALNI HAI!
+
+        // 🚀 API KEY UPDATED AS PER YOUR REQUEST
         const genAI = new GoogleGenerativeAI("AIzaSyAkSiLwbJw2B9PIbNMlAOOXe9SdQQf7de4");
 
-        let currentUser = null; let userXP = 0; let focusMins = 0; let waterCount = 0; let activeTasksCount = 0;
+        let currentUser = null;
+        const playClick = () => document.getElementById('clickSound').play().catch(()=>{});
 
-        const playClick = () => document.getElementById('clickSound').play().catch(e=>{});
-        document.querySelectorAll('button').forEach(b => b.addEventListener('click', playClick));
+        // MODAL LOGIC
+        const modal = document.getElementById("aiModal");
+        document.getElementById("launchAiBtn").onclick = () => { modal.style.display = "block"; playClick(); }
+        document.getElementById("closeAi").onclick = () => modal.style.display = "none";
+        window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
 
-        document.getElementById('scratchPad').value = localStorage.getItem('suryanshScratch') || "";
-        document.getElementById('scratchPad').addEventListener('keyup', (e) => localStorage.setItem('suryanshScratch', e.target.value));
+        // THEMES
+        document.getElementById('themeBtn').onclick = () => document.body.classList.toggle('matrix-mode');
+        document.getElementById('rgbBtn').onclick = () => document.body.classList.toggle('gamer-mode');
 
-        document.getElementById('panicBtn').addEventListener('click', () => { document.body.classList.toggle('panic-mode'); setTimeout(() => document.body.classList.remove('panic-mode'), 5000); });
-        document.getElementById('fullScreenBtn').addEventListener('click', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); });
-        document.getElementById('rgbBtn').addEventListener('click', () => document.body.classList.toggle('gamer-mode'));
-        document.getElementById('themeBtn').addEventListener('click', () => document.body.classList.toggle('matrix-mode'));
-
-        setInterval(() => {
-            let now = new Date(); let h = now.getHours();
-            document.getElementById('clockDisplay').innerText = `📅 ${now.toLocaleDateString('en-IN')} | ⏰ ${now.toLocaleTimeString('en-IN')}`;
-            document.getElementById('greetingText').innerText = h < 12 ? "🌅 Morning Agent" : h < 18 ? "☀️ Day Active" : "🌙 Night Ops";
-            let isHappyHour = (h >= 21 && h < 23);
-            document.getElementById('happyHourStatus').innerText = isHappyHour ? "🟢 ON (2x XP)" : "🔴 OFF";
-            document.getElementById('happyHourStatus').style.color = isHappyHour ? "#00ff00" : "#ff0000";
-        }, 1000);
-
-        if(navigator.getBattery) navigator.getBattery().then(b => { document.getElementById('batteryStatus').innerText = `🔋 ${Math.floor(b.level * 100)}%`; b.addEventListener('levelchange', () => document.getElementById('batteryStatus').innerText = `🔋 ${Math.floor(b.level * 100)}%`); });
-        window.addEventListener('online', () => document.getElementById('networkStatus').innerText = "📶 Online"); 
-        window.addEventListener('offline', () => document.getElementById('networkStatus').innerText = "🔴 Offline");
-
-        async function fetchWeather(lat, lon, city) {
-            try { let res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m`); let data = await res.json(); document.getElementById('weatherDisplay').innerText = `📍 ${city} | 🌡️ ${data.current.temperature_2m}°C`;
-            } catch (err) { document.getElementById('weatherDisplay').innerText = `📍 ${city} | 🌡️ Offline`; }
-        }
-        fetchWeather(25.3176, 82.9739, "VNS");
-        window.changeCity = async () => { let city = prompt("City Name:"); if(!city) return; try { let r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`); let d = await r.json(); if(d.results) fetchWeather(d.results[0].latitude, d.results[0].longitude, d.results[0].name); } catch(e) {} };
-
-        document.getElementById('waterBtn').addEventListener('click', () => { waterCount++; document.getElementById('waterCount').innerText = waterCount; updateXP(5); });
-
-        // 🎤 VOICE RECOGNITION
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        function setupMic(btnId, inputId) {
-            if (!SpeechRecognition) return;
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'hi-IN';
-            let isRecording = false;
-
-            document.getElementById(btnId).addEventListener('click', () => {
-                if (isRecording) { recognition.stop(); return; }
-                recognition.start();
-                document.getElementById(btnId).style.background = "#e74c3c";
-                document.getElementById(inputId).placeholder = "Listening...";
-                isRecording = true;
-            });
-
-            recognition.onresult = (event) => { document.getElementById(inputId).value += event.results[0][0].transcript; };
-            recognition.onend = () => { document.getElementById(btnId).style.background = "transparent"; document.getElementById(inputId).placeholder = "> Prompt..."; isRecording = false; };
-        }
-        setupMic('aiMicBtn', 'aiInput');
-        setupMic('taskMicBtn', 'taskInput');
-
-        // AI ENGINE
-        let base64Image = null; let mimeType = null; let latestAiText = "";
-        document.getElementById('imageUpload').addEventListener('change', e => { let file = e.target.files[0]; if(file){ mimeType = file.type; let r = new FileReader(); r.onload = ev => { base64Image = ev.target.result.split(',')[1]; document.getElementById('imagePreview').src = ev.target.result; document.getElementById('imagePreview').style.display = "inline"; }; r.readAsDataURL(file); } });
-        
-        document.getElementById('vlogPromptBtn').addEventListener('click', () => document.getElementById('aiInput').value = "Suggest 3 crazy science experiment vlog titles.");
-        document.getElementById('codePromptBtn').addEventListener('click', () => document.getElementById('aiInput').value = "Write a strict Java logic to track daily habits.");
-
-        document.getElementById('askAiBtn').addEventListener('click', async () => {
-            let q = document.getElementById('aiInput').value; let out = document.getElementById('aiOutput');
-            if(!q && !base64Image) return; 
-            
-            let typingInterval = setInterval(() => { out.innerText = out.innerText.endsWith("...") ? "> Cortex thinking" : out.innerText + "."; }, 500);
-            
+        // AI LOGIC
+        let latestAiText = "";
+        document.getElementById('askAiBtn').onclick = async () => {
+            const q = document.getElementById('aiInput').value;
+            const out = document.getElementById('aiOutput');
+            if(!q) return;
+            out.innerText = "> Thinking...";
             try {
-                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); 
-                let res = base64Image ? await model.generateContent([q || "Analyze this image accurately.", {inlineData:{data:base64Image, mimeType:mimeType}}]) : await model.generateContent(q);
-                clearInterval(typingInterval);
-                latestAiText = (await res.response).text(); out.innerText = `> ${latestAiText}`;
-                document.getElementById('wordCount').innerText = latestAiText.split(" ").length;
-                document.getElementById('aiInput').value = ""; base64Image = null; document.getElementById('imagePreview').style.display = "none";
-            } catch(e) { clearInterval(typingInterval); out.innerText = `[ERROR]: ${e.message}`; }
-        });
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+                const res = await model.generateContent(q);
+                latestAiText = res.response.text();
+                out.innerText = `> ${latestAiText}`;
+                document.getElementById('aiInput').value = "";
+            } catch(e) { out.innerText = `[ERROR]: ${e.message}`; }
+        };
 
-        document.getElementById('ttsBtn').addEventListener('click', () => { if(latestAiText) { let u = new SpeechSynthesisUtterance(latestAiText); u.lang = 'hi-IN'; window.speechSynthesis.speak(u); } });
-        document.getElementById('copyAiBtn').addEventListener('click', () => { navigator.clipboard.writeText(latestAiText); alert("AI Response Copied!"); });
+        // MIC LOGIC
+        const recognition = window.SpeechRecognition || window.webkitSpeechRecognition ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
+        if(recognition) {
+            recognition.lang = 'hi-IN';
+            document.getElementById('aiMicBtn').onclick = () => { recognition.start(); document.getElementById('aiInput').placeholder="Suno raha hu..."; };
+            recognition.onresult = (e) => { document.getElementById('aiInput').value = e.results[0][0].transcript; };
+            recognition.onend = () => { document.getElementById('aiInput').placeholder="Type your question here..."; };
+        }
+
+        document.getElementById('copyAiBtn').onclick = () => { navigator.clipboard.writeText(latestAiText); alert("Copied!"); };
+        document.getElementById('ttsBtn').onclick = () => { let u = new SpeechSynthesisUtterance(latestAiText); u.lang='hi-IN'; window.speechSynthesis.speak(u); };
 
         // AUTH
-        document.getElementById('loginBtn').addEventListener('click', () => { signInWithPopup(auth, provider).catch(error => { alert("🚨 KHADUS GURU ALERT: " + error.message); }); });
-        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
+        document.getElementById('logoutBtn').onclick = () => signOut(auth);
 
         onAuthStateChanged(auth, (user) => {
-            if (user) { 
-                currentUser = user; document.getElementById('loginScreen').style.display = "none"; document.getElementById('appScreen').style.display = "block"; 
-                document.getElementById('userName').innerText = user.displayName; 
-                document.getElementById('userAvatar').src = user.photoURL; document.getElementById('userAvatar').style.display = "block";
-                loadCloudData(); 
-            } else { currentUser = null; document.getElementById('loginScreen').style.display = "block"; document.getElementById('appScreen').style.display = "none"; }
+            if(user) {
+                currentUser = user;
+                document.getElementById('loginScreen').style.display = "none";
+                document.getElementById('appScreen').style.display = "block";
+                loadTasks();
+            } else {
+                currentUser = null;
+                document.getElementById('loginScreen').style.display = "block";
+                document.getElementById('appScreen').style.display = "none";
+            }
         });
 
-        function loadCloudData() {
-            onSnapshot(query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc")), (snapshot) => {
-                let ic = document.getElementById('ideaCol'); let ac = document.getElementById('actionCol'); let pc = document.getElementById('postCol');
-                ic.innerHTML = ""; ac.innerHTML = ""; pc.innerHTML = ""; activeTasksCount = 0;
-                
-                snapshot.forEach(d => {
-                    let t = d.data(); let stat = t.status || 'idea';
-                    if(stat !== 'post') activeTasksCount++;
-                    let li = document.createElement('li');
-                    li.innerHTML = `<span style="font-weight:bold;">${t.text} <span style="font-size:0.8em; background:#222; padding:2px; border-radius:3px; float:right;">${t.priority||'⚡'}</span></span>
-                    <div class="task-actions">
-                        ${stat==='idea' ? `<button class="action-btn" onclick="moveTask('${d.id}','action')">➡️</button>` : stat==='action' ? `<button class="action-btn" onclick="moveTask('${d.id}','post')">➡️</button>` : `<button class="action-btn" style="background:var(--theme-color);color:#000;" onclick="completeTask('${d.id}')">✔</button>`}
-                        <button class="action-btn" style="color:#e74c3c; border-color:#e74c3c;" onclick="deleteTask('${d.id}')">❌</button>
-                    </div>`;
-                    if(stat==='idea') ic.appendChild(li); else if(stat==='action') ac.appendChild(li); else pc.appendChild(li);
+        // TASKS LOGIC
+        async function loadTasks() {
+            onSnapshot(query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc")), (snap) => {
+                document.getElementById('ideaCol').innerHTML = "";
+                document.getElementById('actionCol').innerHTML = "";
+                document.getElementById('postCol').innerHTML = "";
+                snap.forEach(d => {
+                    const t = d.data();
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${t.text}</span> <button onclick="window.move('${d.id}', '${t.status}')">➡️</button>`;
+                    if(t.status === 'idea') document.getElementById('ideaCol').appendChild(li);
+                    else if(t.status === 'action') document.getElementById('actionCol').appendChild(li);
+                    else document.getElementById('postCol').appendChild(li);
                 });
-                document.title = activeTasksCount > 0 ? `(${activeTasksCount}) Tasks - Cortex OS` : `Cortex OS Pro`;
             });
-
-            onSnapshot(collection(db, "users", currentUser.uid, "routines"), (snapshot) => {
-                let rc = document.getElementById('routineCol'); rc.innerHTML = "";
-                snapshot.forEach(d => { let r = d.data(); let li = document.createElement('li'); li.style.borderLeft="5px solid #ff003c"; li.innerHTML = `<span>${r.text} <small>(${r.time})</small></span> <button class="action-btn" onclick="deleteRoutine('${d.id}')">❌</button>`; rc.appendChild(li); });
-            });
-
-            userXP = parseInt(localStorage.getItem('suryanshXP_'+currentUser.uid)) || 0;
-            focusMins = parseInt(localStorage.getItem('suryanshFocus_'+currentUser.uid)) || 0;
-            document.getElementById('streakCount').innerText = localStorage.getItem('suryanshStreak_'+currentUser.uid) || 0;
-            updateStats();
         }
 
-        document.getElementById('addTaskBtn').addEventListener('click', async () => {
-            let text = document.getElementById('taskInput').value; let prio = document.getElementById('taskPriority').value;
-            if (!text) return; await addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: text, priority: prio, status: 'idea', createdAt: serverTimestamp() });
+        document.getElementById('addTaskBtn').onclick = async () => {
+            const val = document.getElementById('taskInput').value;
+            if(!val) return;
+            await addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: val, status: 'idea', createdAt: serverTimestamp() });
             document.getElementById('taskInput').value = "";
-        });
-        document.getElementById('addRoutineBtn').addEventListener('click', async () => {
-            let text = document.getElementById('routineInput').value; let time = document.getElementById('routineTime').value;
-            if (!text || !time) return; await addDoc(collection(db, "users", currentUser.uid, "routines"), { text: text, time: time });
-        });
-        
-        window.moveTask = async (id, s) => { await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: s }); };
-        window.completeTask = async (id) => { updateXP(50); await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: 'post' }); }; 
-        window.deleteTask = async (id) => { await deleteDoc(doc(db, "users", currentUser.uid, "tasks", id)); };
-        window.deleteRoutine = async (id) => { await deleteDoc(doc(db, "users", currentUser.uid, "routines", id)); };
+        };
 
-        document.getElementById('clearTasksBtn').addEventListener('click', async () => { alert("Wipe Post-Prod Tasks triggered!"); });
-
-        document.getElementById('exportBtn').addEventListener('click', () => {
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ xp: userXP, focus: focusMins, exportDate: new Date() }));
-            let a = document.createElement('a'); a.href = dataStr; a.download = "cortex_backup.json"; a.click();
-        });
-
-        function updateStats() {
-            localStorage.setItem('suryanshXP_'+currentUser.uid, userXP); localStorage.setItem('suryanshFocus_'+currentUser.uid, focusMins);
-            document.getElementById('xpCount').innerText = userXP; document.getElementById('lifeFocus').innerText = focusMins;
-            document.getElementById('xpProgress').value = userXP % 1000;
-            let c = userXP>1000 ? "#ff003c" : userXP>500 ? "#9b59b6" : userXP>100 ? "#00bfff" : "#00ff00";
-            document.documentElement.style.setProperty('--theme-color', c);
-        }
-        function updateXP(a) { 
-            let h = new Date().getHours(); if (h >= 21 && h < 23) a = a * 2; 
-            userXP += a; if(userXP<0) userXP=0; updateStats(); 
-        }
-
-        let timerInterval; let timeLeft = 0; let focusSessionMins = 0;
-        document.getElementById('startTimerBtn').addEventListener('click', () => {
-            focusSessionMins = parseInt(document.getElementById('customMinutes').value); if(!focusSessionMins) return;
-            clearInterval(timerInterval); timeLeft = focusSessionMins * 60;
-            
-            let streak = parseInt(localStorage.getItem('suryanshStreak_'+currentUser.uid)) || 0;
-            localStorage.setItem('suryanshStreak_'+currentUser.uid, streak + 1); document.getElementById('streakCount').innerText = streak + 1;
-
-            timerInterval = setInterval(() => {
-                if(timeLeft > 0) {
-                    timeLeft--; let m = Math.floor(timeLeft/60); let s = timeLeft%60;
-                    document.getElementById('timeDisplay').innerText = `${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
-                } else {
-                    clearInterval(timerInterval); document.getElementById('successSound').play(); alert("Focus Complete! +50 XP!"); updateXP(50); 
-                    focusMins += focusSessionMins; updateStats(); document.getElementById('timeDisplay').innerText = "00:00";
-                }
-            }, 1000);
-        });
-        document.getElementById('resetTimerBtn').addEventListener('click', () => { clearInterval(timerInterval); document.getElementById('timeDisplay').innerText = "00:00"; });
-        
-        let lofiPlaying = false; document.getElementById('lofiBtn').addEventListener('click', () => { let audio = document.getElementById('lofiAudio'); lofiPlaying ? audio.pause() : audio.play(); lofiPlaying = !lofiPlaying; document.getElementById('lofiBtn').innerText = lofiPlaying ? "⏸ Pause Lofi" : "🎵 Play Lofi"; });
+        window.move = async (id, current) => {
+            let next = current === 'idea' ? 'action' : 'post';
+            await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: next });
+        };
 
     </script>
 </body>
