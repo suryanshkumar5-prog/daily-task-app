@@ -3,55 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cortex OS v11.2 - Final Stable</title>
-    <script type="importmap">
-      { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
-    </script>
+    <title>Cortex OS v11.4 - Ultra Secure</title>
+    <script type="importmap"> { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } } </script>
     <style>
         :root { --theme-color: #00ff00; --bg: #050505; --panel: #111; }
         body { font-family: 'Courier New', monospace; background: var(--bg); color: var(--theme-color); margin: 0; padding: 10px; transition: 0.5s; overflow-x: hidden; }
-        body.matrix-mode { background: #000 url('https://i.pinimg.com/originals/15/4a/c9/154ac98fba50a3cc4670cde5d233e7e2.gif') center/cover fixed; }
-        body.gamer-mode { animation: rgbGlow 5s infinite; border: 3px solid red; }
-        @keyframes rgbGlow { 0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; } 33% { border-color: #00ff00; box-shadow: 0 0 15px #00ff00; } 66% { border-color: #0000ff; box-shadow: 0 0 15px #0000ff; } 100% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; } }
-        body.ghost-mode { filter: blur(10px) brightness(0.3); pointer-events: none; }
-        .container { background: var(--panel); padding: 15px; border-radius: 12px; max-width: 1200px; margin: auto; border: 1px solid var(--theme-color); }
-        .hud { display: flex; justify-content: space-between; font-size: 0.75em; background: #000; padding: 8px; border-bottom: 2px solid var(--theme-color); margin-bottom: 10px; flex-wrap: wrap; gap: 5px; }
-        #weatherDisp { color: #00bfff; cursor: pointer; }
-        .btn { background: transparent; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 8px; cursor: pointer; font-family: 'Courier New'; font-weight: bold; font-size: 0.8em; }
+        .container { background: var(--panel); padding: 15px; border-radius: 12px; max-width: 1200px; margin: auto; border: 1px solid var(--theme-color); box-shadow: 0 0 20px rgba(0,255,0,0.1); }
+        .hud { display: flex; justify-content: space-between; font-size: 0.75em; background: #000; padding: 8px; border-bottom: 2px solid var(--theme-color); margin-bottom: 15px; }
+        .btn { background: transparent; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 8px 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
         .btn:hover { background: var(--theme-color); color: #000; }
-        #launchAiBtn { background: #00bfff; color: #000; width: 100%; padding: 15px; margin: 15px 0; font-size: 1.1em; border: none; box-shadow: 0 0 20px rgba(0,191,255,0.4); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 15px; }
-        .panel { background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #333; }
+        #launchAiBtn { background: #00bfff; color: #000; width: 100%; padding: 15px; margin: 15px 0; font-size: 1.2em; border: none; box-shadow: 0 0 20px rgba(0,191,255,0.4); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px; }
+        .panel { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; }
         #timeDisplay { font-size: 3em; color: #ff4444; margin: 10px 0; }
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); }
         .modal-content { width: 95%; max-width: 850px; margin: 5% auto; text-align: left; }
-        #aiOutput { background: #000; border: 1px solid #00bfff; padding: 15px; height: 350px; overflow-y: auto; color: #fff; line-height: 1.5; font-size: 1.05em; margin-bottom: 10px; white-space: pre-wrap; }
-        input, select, textarea { background: #000; color: var(--theme-color); border: 1px solid #444; padding: 8px; font-family: 'Courier New'; }
-        ul { list-style: none; padding: 0; text-align: left; }
-        li { background: #0a0a0a; padding: 10px; margin-top: 5px; border-left: 4px solid var(--theme-color); display: flex; justify-content: space-between; align-items: center; }
+        #aiOutput { background: #000; border: 1px solid #00bfff; padding: 15px; height: 350px; overflow-y: auto; color: #fff; white-space: pre-wrap; font-size: 1.1em; line-height: 1.5; }
+        input, textarea { background: #000; color: var(--theme-color); border: 1px solid #444; padding: 10px; width: 100%; box-sizing: border-box; font-family: 'Courier New'; }
+        ul { list-style: none; padding: 0; }
+        li { background: #0a0a0a; padding: 12px; margin-top: 8px; border-left: 4px solid var(--theme-color); display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
-<body id="mainBody">
+<body>
 
-    <div id="loginScreen" class="container" style="margin-top: 100px;">
-        <h1>[ CORTEX_SYSTEM_LOCKED ]</h1>
-        <button class="btn" id="loginBtn" style="font-size:1.2em; padding:15px;">🛡️ ACCESS SYSTEM</button>
+    <div id="loginScreen" class="container" style="margin-top: 100px; text-align:center;">
+        <h1>[ CORTEX_V11.4_LOCKED ]</h1>
+        <p style="color: #888;">Nayi API Key fit kar di gayi hai. Access chalu karo!</p>
+        <button class="btn" id="loginBtn" style="padding:15px 30px; font-size:1.2em;">🛡️ LOGIN TO SYSTEM</button>
     </div>
 
     <div id="appScreen" class="container" style="display:none;">
         <div class="hud">
-            <div id="weatherDisp" onclick="changeCity()">📍 VNS: ☁️ Fetching...</div>
-            <div>XP: <span id="xpVal">0</span> | <span id="rankVal">NOVICE</span></div>
+            <div id="weatherDisp">📍 VARANASI: ☁️ Fetching...</div>
+            <div>XP: <span id="xpVal">0</span> | RANK: <span id="rankVal">NOVICE</span></div>
             <div id="clock">00:00:00</div>
         </div>
 
         <div class="dock" style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center;">
-            <button class="btn" onclick="setMode('matrix')">🕶️ Matrix</button>
-            <button class="btn" onclick="setMode('gamer')">🌈 RGB</button>
-            <button class="btn" onclick="setMode('ghost')">👻 Ghost</button>
-            <button class="btn" onclick="setMode('normal')">🔄 Reset</button>
             <button class="btn" id="waterBtn">💧 Water (<span id="watCnt">0</span>)</button>
-            <button class="btn" id="logoutBtn" style="color:red; border-color:red;">🚪 Exit</button>
+            <button class="btn" id="logoutBtn" style="color:red; border-color:red;">🚪 Exit System</button>
         </div>
 
         <button id="launchAiBtn">🧠 INITIALIZE CORTEX AI (FULL SCREEN)</button>
@@ -59,15 +50,16 @@
         <div class="grid">
             <div class="panel" style="border-color: #ff4444;">
                 <h3 style="color:#ff4444; margin:0;">⏲️ FOCUS TIMER</h3>
-                <input type="number" id="timerMin" value="25" style="width:50px;"> <small>Min</small>
+                <input type="number" id="timerMin" value="25" style="width:60px;"> <small>Min</small>
                 <div id="timeDisplay">25:00</div>
                 <button class="btn" id="startTimer">START</button>
                 <button class="btn" id="lofiBtn">🎵 LOFI</button>
                 <audio id="lofiAudio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"></audio>
             </div>
+
             <div class="panel" style="border-color: #f1c40f;">
                 <h3 style="color:#f1c40f; margin:0;">📝 SCRATCHPAD</h3>
-                <textarea id="scratch" rows="5" style="width:100%;" placeholder="Raat ke sapne yahan likho..."></textarea>
+                <textarea id="scratch" rows="5" placeholder="Raat ke sapne yahan likho..."></textarea>
             </div>
         </div>
 
@@ -75,7 +67,7 @@
             <div class="panel">
                 <h3>💡 IDEAS</h3>
                 <div style="display:flex;">
-                    <input type="text" id="taskIn" style="flex-grow:1;">
+                    <input type="text" id="taskIn" placeholder="New task...">
                     <button class="btn" id="addTask">+</button>
                 </div>
                 <ul id="ideaCol"></ul>
@@ -88,15 +80,11 @@
     <div id="aiModal" class="modal">
         <div class="modal-content">
             <button class="btn" id="closeAi" style="float:right; color:red;">[ CLOSE ]</button>
-            <h2 style="color:#00bfff;">🧠 CORTEX CORE v11.2</h2>
-            <div id="aiOutput">> Agent ready. Prompt me...</div>
-            <div style="display:flex; gap:5px;">
-                <input type="text" id="aiIn" style="flex-grow:1; padding:12px;" placeholder="Guru ji se sawal pucho...">
-                <button class="btn" id="askAiBtn" style="background:#00bfff; color:#000;">ASK</button>
-            </div>
-            <div style="margin-top:10px;">
-                <button class="btn" onclick="copyText()">📋 Copy</button>
-                <button class="btn" onclick="speakText()">🔊 Speak</button>
+            <h2 style="color:#00bfff;">🧠 CORTEX CORE v11.4</h2>
+            <div id="aiOutput">> Secure Connection Established. Welcome Agent.</div>
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <input type="text" id="aiIn" placeholder="Guru ji se sawal pucho...">
+                <button class="btn" id="askAiBtn" style="background:#00bfff; color:#000;">ASK AI</button>
             </div>
         </div>
     </div>
@@ -104,7 +92,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
         const firebaseConfig = { apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc", authDomain: "suryansh-pro-tasker.firebaseapp.com", projectId: "suryansh-pro-tasker", storageBucket: "suryansh-pro-tasker.firebasestorage.app", messagingSenderId: "264919463662", appId: "1:264919463662:web:52fbe3e64000827ba065ff" };
@@ -112,37 +100,60 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
-        const genAI = new GoogleGenerativeAI("AIzaSyAkSiLwbJw2B9PIbNMlAOOXe9SdQQf7de4");
+
+        // 🚀 TERA NAYA AI KEY UPDATED!
+        const genAI = new GoogleGenerativeAI("AIzaSyD1kJ_81egYtym4pjVmeMia1kixm-o8F5U");
 
         let currentUser = null; let userXp = 0;
 
-        window.setMode = (m) => { const b = document.getElementById('mainBody'); b.className = ''; if(m !== 'normal') b.classList.add(m + '-mode'); if(m === 'ghost') setTimeout(() => b.classList.remove('ghost-mode'), 5000); };
-
-        async function fetchWeather(lat, lon, city) {
-            try { const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m`); const data = await res.json(); document.getElementById('weatherDisp').innerText = `📍 ${city}: ${data.current.temperature_2m}°C`; } catch (e) { document.getElementById('weatherDisp').innerText = `📍 Offline`; }
-        }
-        fetchWeather(25.3176, 82.9739, "VNS");
-        window.changeCity = async () => { const c = prompt("City Name:"); if(!c) return; const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${c}&count=1`); const d = await r.json(); if(d.results) fetchWeather(d.results[0].latitude, d.results[0].longitude, d.results[0].name); };
-
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
         document.getElementById('logoutBtn').onclick = () => signOut(auth);
-        onAuthStateChanged(auth, (user) => { if(user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appScreen').style.display = 'block'; loadData(); } else { document.getElementById('loginScreen').style.display = 'block'; document.getElementById('appScreen').style.display = 'none'; } });
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
+                currentUser = user;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appScreen').style.display = 'block';
+                loadData();
+            } else {
+                document.getElementById('loginScreen').style.display = 'block';
+                document.getElementById('appScreen').style.display = 'none';
+            }
+        });
 
-        function updateXP(v) { userXp += v; document.getElementById('xpVal').innerText = userXp; document.getElementById('rankVal').innerText = userXp > 1000 ? "CYBER-LORD" : userXp > 500 ? "HACKER" : "NOVICE"; }
+        function updateXP(v) { userXp += v; document.getElementById('xpVal').innerText = userXp; document.getElementById('rankVal').innerText = userXp > 1000 ? "CYBER-LORD" : "NOVICE"; }
 
         function loadData() {
             onSnapshot(query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc")), (snap) => {
                 document.getElementById('ideaCol').innerHTML = ""; document.getElementById('actionCol').innerHTML = ""; document.getElementById('postCol').innerHTML = "";
-                snap.forEach(d => { const t = d.data(); const li = document.createElement('li'); li.innerHTML = `<span>${t.text}</span> <button class="btn" onclick="mv('${d.id}','${t.status}')">></button>`; document.getElementById(t.status + 'Col').appendChild(li); });
+                snap.forEach(d => {
+                    const t = d.data();
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${t.text}</span> <button class="btn" onclick="mv('${d.id}','${t.status}')">></button>`;
+                    document.getElementById(t.status + 'Col').appendChild(li);
+                });
             });
         }
         window.mv = async (id, s) => { let n = s === 'idea' ? 'action' : 'post'; await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: n }); if(n === 'post') updateXP(50); };
-        document.getElementById('addTask').onclick = () => { const val = document.getElementById('taskIn').value; if(!val) return; addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: val, status: 'idea', createdAt: serverTimestamp() }); document.getElementById('taskIn').value = ""; };
+        document.getElementById('addTask').onclick = () => {
+            const val = document.getElementById('taskIn').value;
+            if(val) addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: val, status: 'idea', createdAt: serverTimestamp() });
+            document.getElementById('taskIn').value = "";
+        };
 
+        // TIMER
         let tInt;
-        document.getElementById('startTimer').onclick = () => { clearInterval(tInt); let time = parseInt(document.getElementById('timerMin').value) * 60; tInt = setInterval(() => { time--; let m = Math.floor(time/60), s = time%60; document.getElementById('timeDisplay').innerText = `${m}:${s<10?'0'+s:s}`; if(time <= 0) { clearInterval(tInt); alert("Time Up! +50 XP"); updateXP(50); } }, 1000); };
+        document.getElementById('startTimer').onclick = () => {
+            clearInterval(tInt);
+            let time = parseInt(document.getElementById('timerMin').value) * 60;
+            tInt = setInterval(() => {
+                time--;
+                let m = Math.floor(time/60), s = time%60;
+                document.getElementById('timeDisplay').innerText = `${m}:${s<10?'0'+s:s}`;
+                if(time <= 0) { clearInterval(tInt); alert("Time Up! +50 XP"); updateXP(50); }
+            }, 1000);
+        };
 
-        // 🚀 STABLE AI LOGIC (v11.2 FIX)
+        // 🤖 SECURE AI CORE
         const modal = document.getElementById('aiModal');
         document.getElementById('launchAiBtn').onclick = () => modal.style.display = 'block';
         document.getElementById('closeAi').onclick = () => modal.style.display = 'none';
@@ -150,28 +161,28 @@
         document.getElementById('askAiBtn').onclick = async () => {
             const out = document.getElementById('aiOutput');
             const inp = document.getElementById('aiIn');
-            const text = inp.value.trim();
-            if(!text) return;
-
-            out.innerText = "> [CORTEX]: Decrypting neural path...";
-            inp.value = ""; 
-
+            if(!inp.value) return;
+            out.innerText = "> [CORTEX]: Analysing secure neural path...";
             try {
                 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-                const result = await model.generateContent(text);
-                const response = await result.response;
-                out.innerText = `> Cortex: ${response.text()}`;
-                updateXP(15);
+                const res = await model.generateContent(inp.value);
+                out.innerText = `> Cortex: ${res.response.text()}`;
+                inp.value = ""; updateXP(15);
             } catch(e) {
-                out.innerText = `> [SYSTEM_ERROR]: ${e.message}`;
-                console.error(e);
+                out.innerText = `> [SECURITY_ALERT]: ${e.message}\n\n💡 Guru Tip: Nayi key leak na ho iska dhyan rakho!`;
             }
         };
 
-        window.copyText = () => { navigator.clipboard.writeText(document.getElementById('aiOutput').innerText); alert("Copied!"); };
-        window.speakText = () => { let u = new SpeechSynthesisUtterance(document.getElementById('aiOutput').innerText); u.lang='hi-IN'; window.speechSynthesis.speak(u); };
         setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
-        document.getElementById('waterBtn').onclick = () => { let c = parseInt(document.getElementById('watCnt').innerText) + 1; document.getElementById('watCnt').innerText = c; updateXP(5); };
+        document.getElementById('waterBtn').onclick = () => { 
+            let c = parseInt(document.getElementById('watCnt').innerText) + 1;
+            document.getElementById('watCnt').innerText = c; updateXP(5);
+        };
+        // SCRATCHPAD AUTO-SAVE
+        const scratch = document.getElementById('scratch');
+        scratch.value = localStorage.getItem('cortex_scratch') || "";
+        scratch.oninput = () => localStorage.setItem('cortex_scratch', scratch.value);
+
     </script>
 </body>
 </html>
