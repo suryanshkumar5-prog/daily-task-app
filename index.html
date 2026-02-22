@@ -3,43 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cortex OS v11 - Khadus Guru Edition</title>
+    <title>Cortex OS v11.2 - Final Stable</title>
     <script type="importmap">
       { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
     </script>
     <style>
         :root { --theme-color: #00ff00; --bg: #050505; --panel: #111; }
         body { font-family: 'Courier New', monospace; background: var(--bg); color: var(--theme-color); margin: 0; padding: 10px; transition: 0.5s; overflow-x: hidden; }
-        
-        /* THEMES */
         body.matrix-mode { background: #000 url('https://i.pinimg.com/originals/15/4a/c9/154ac98fba50a3cc4670cde5d233e7e2.gif') center/cover fixed; }
         body.gamer-mode { animation: rgbGlow 5s infinite; border: 3px solid red; }
         @keyframes rgbGlow { 0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; } 33% { border-color: #00ff00; box-shadow: 0 0 15px #00ff00; } 66% { border-color: #0000ff; box-shadow: 0 0 15px #0000ff; } 100% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; } }
         body.ghost-mode { filter: blur(10px) brightness(0.3); pointer-events: none; }
-
         .container { background: var(--panel); padding: 15px; border-radius: 12px; max-width: 1200px; margin: auto; border: 1px solid var(--theme-color); }
-        
-        /* HUD BAR */
         .hud { display: flex; justify-content: space-between; font-size: 0.75em; background: #000; padding: 8px; border-bottom: 2px solid var(--theme-color); margin-bottom: 10px; flex-wrap: wrap; gap: 5px; }
         #weatherDisp { color: #00bfff; cursor: pointer; }
-
-        /* BUTTONS */
         .btn { background: transparent; color: var(--theme-color); border: 1px solid var(--theme-color); padding: 8px; cursor: pointer; font-family: 'Courier New'; font-weight: bold; font-size: 0.8em; }
         .btn:hover { background: var(--theme-color); color: #000; }
         #launchAiBtn { background: #00bfff; color: #000; width: 100%; padding: 15px; margin: 15px 0; font-size: 1.1em; border: none; box-shadow: 0 0 20px rgba(0,191,255,0.4); }
-
-        /* PANELS */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 15px; }
         .panel { background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #333; }
-        
-        /* TIMER DISPLAY */
         #timeDisplay { font-size: 3em; color: #ff4444; margin: 10px 0; }
-
-        /* AI MODAL */
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); }
         .modal-content { width: 95%; max-width: 850px; margin: 5% auto; text-align: left; }
         #aiOutput { background: #000; border: 1px solid #00bfff; padding: 15px; height: 350px; overflow-y: auto; color: #fff; line-height: 1.5; font-size: 1.05em; margin-bottom: 10px; white-space: pre-wrap; }
-
         input, select, textarea { background: #000; color: var(--theme-color); border: 1px solid #444; padding: 8px; font-family: 'Courier New'; }
         ul { list-style: none; padding: 0; text-align: left; }
         li { background: #0a0a0a; padding: 10px; margin-top: 5px; border-left: 4px solid var(--theme-color); display: flex; justify-content: space-between; align-items: center; }
@@ -48,8 +34,7 @@
 <body id="mainBody">
 
     <div id="loginScreen" class="container" style="margin-top: 100px;">
-        <h1 id="khadusTitle">[ CORTEX_SYSTEM_LOCKED ]</h1>
-        <p style="color: #ff4444;">"Student ho toh tameez se login karo!" - Khadus Guru</p>
+        <h1>[ CORTEX_SYSTEM_LOCKED ]</h1>
         <button class="btn" id="loginBtn" style="font-size:1.2em; padding:15px;">🛡️ ACCESS SYSTEM</button>
     </div>
 
@@ -80,7 +65,6 @@
                 <button class="btn" id="lofiBtn">🎵 LOFI</button>
                 <audio id="lofiAudio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"></audio>
             </div>
-
             <div class="panel" style="border-color: #f1c40f;">
                 <h3 style="color:#f1c40f; margin:0;">📝 SCRATCHPAD</h3>
                 <textarea id="scratch" rows="5" style="width:100%;" placeholder="Raat ke sapne yahan likho..."></textarea>
@@ -104,7 +88,7 @@
     <div id="aiModal" class="modal">
         <div class="modal-content">
             <button class="btn" id="closeAi" style="float:right; color:red;">[ CLOSE ]</button>
-            <h2 style="color:#00bfff;">🧠 CORTEX CORE v11.0</h2>
+            <h2 style="color:#00bfff;">🧠 CORTEX CORE v11.2</h2>
             <div id="aiOutput">> Agent ready. Prompt me...</div>
             <div style="display:flex; gap:5px;">
                 <input type="text" id="aiIn" style="flex-grow:1; padding:12px;" placeholder="Guru ji se sawal pucho...">
@@ -130,116 +114,64 @@
         const provider = new GoogleAuthProvider();
         const genAI = new GoogleGenerativeAI("AIzaSyAkSiLwbJw2B9PIbNMlAOOXe9SdQQf7de4");
 
-        let currentUser = null;
-        let userXp = 0;
+        let currentUser = null; let userXp = 0;
 
-        // THEMES ENGINE (FIXED)
-        window.setMode = (m) => {
-            const b = document.getElementById('mainBody');
-            b.className = '';
-            if(m !== 'normal') b.classList.add(m + '-mode');
-            if(m === 'ghost') setTimeout(() => b.classList.remove('ghost-mode'), 5000);
-        };
+        window.setMode = (m) => { const b = document.getElementById('mainBody'); b.className = ''; if(m !== 'normal') b.classList.add(m + '-mode'); if(m === 'ghost') setTimeout(() => b.classList.remove('ghost-mode'), 5000); };
 
-        // WEATHER (FIXED)
         async function fetchWeather(lat, lon, city) {
-            try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m`);
-                const data = await res.json();
-                document.getElementById('weatherDisp').innerText = `📍 ${city}: ${data.current.temperature_2m}°C`;
-            } catch (e) { document.getElementById('weatherDisp').innerText = `📍 Offline`; }
+            try { const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m`); const data = await res.json(); document.getElementById('weatherDisp').innerText = `📍 ${city}: ${data.current.temperature_2m}°C`; } catch (e) { document.getElementById('weatherDisp').innerText = `📍 Offline`; }
         }
         fetchWeather(25.3176, 82.9739, "VNS");
-        window.changeCity = async () => {
-            const c = prompt("City Name:");
-            if(!c) return;
-            const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${c}&count=1`);
-            const d = await r.json();
-            if(d.results) fetchWeather(d.results[0].latitude, d.results[0].longitude, d.results[0].name);
-        };
+        window.changeCity = async () => { const c = prompt("City Name:"); if(!c) return; const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${c}&count=1`); const d = await r.json(); if(d.results) fetchWeather(d.results[0].latitude, d.results[0].longitude, d.results[0].name); };
 
-        // AUTH
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
         document.getElementById('logoutBtn').onclick = () => signOut(auth);
-        onAuthStateChanged(auth, (user) => {
-            if(user) {
-                currentUser = user;
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('appScreen').style.display = 'block';
-                loadData();
-            } else {
-                document.getElementById('loginScreen').style.display = 'block';
-                document.getElementById('appScreen').style.display = 'none';
-            }
-        });
+        onAuthStateChanged(auth, (user) => { if(user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appScreen').style.display = 'block'; loadData(); } else { document.getElementById('loginScreen').style.display = 'block'; document.getElementById('appScreen').style.display = 'none'; } });
 
-        // XP & TASKS
-        function updateXP(v) {
-            userXp += v;
-            document.getElementById('xpVal').innerText = userXp;
-            document.getElementById('rankVal').innerText = userXp > 1000 ? "CYBER-LORD" : userXp > 500 ? "HACKER" : "NOVICE";
-        }
+        function updateXP(v) { userXp += v; document.getElementById('xpVal').innerText = userXp; document.getElementById('rankVal').innerText = userXp > 1000 ? "CYBER-LORD" : userXp > 500 ? "HACKER" : "NOVICE"; }
 
         function loadData() {
             onSnapshot(query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc")), (snap) => {
                 document.getElementById('ideaCol').innerHTML = ""; document.getElementById('actionCol').innerHTML = ""; document.getElementById('postCol').innerHTML = "";
-                snap.forEach(d => {
-                    const t = d.data();
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span>${t.text}</span> <button class="btn" onclick="mv('${d.id}','${t.status}')">></button>`;
-                    document.getElementById(t.status + 'Col').appendChild(li);
-                });
+                snap.forEach(d => { const t = d.data(); const li = document.createElement('li'); li.innerHTML = `<span>${t.text}</span> <button class="btn" onclick="mv('${d.id}','${t.status}')">></button>`; document.getElementById(t.status + 'Col').appendChild(li); });
             });
         }
-        window.mv = async (id, s) => {
-            let n = s === 'idea' ? 'action' : 'post';
-            await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: n });
-            if(n === 'post') updateXP(50);
-        };
-        document.getElementById('addTask').onclick = () => {
-            const val = document.getElementById('taskIn').value;
-            if(!val) return;
-            addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: val, status: 'idea', createdAt: serverTimestamp() });
-            document.getElementById('taskIn').value = "";
-        };
+        window.mv = async (id, s) => { let n = s === 'idea' ? 'action' : 'post'; await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: n }); if(n === 'post') updateXP(50); };
+        document.getElementById('addTask').onclick = () => { const val = document.getElementById('taskIn').value; if(!val) return; addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: val, status: 'idea', createdAt: serverTimestamp() }); document.getElementById('taskIn').value = ""; };
 
-        // TIMER (CUSTOM FIXED)
         let tInt;
-        document.getElementById('startTimer').onclick = () => {
-            clearInterval(tInt);
-            let time = parseInt(document.getElementById('timerMin').value) * 60;
-            tInt = setInterval(() => {
-                time--;
-                let m = Math.floor(time/60), s = time%60;
-                document.getElementById('timeDisplay').innerText = `${m}:${s<10?'0'+s:s}`;
-                if(time <= 0) { clearInterval(tInt); alert("Time Up, Aalsi Student! +50 XP"); updateXP(50); }
-            }, 1000);
-        };
+        document.getElementById('startTimer').onclick = () => { clearInterval(tInt); let time = parseInt(document.getElementById('timerMin').value) * 60; tInt = setInterval(() => { time--; let m = Math.floor(time/60), s = time%60; document.getElementById('timeDisplay').innerText = `${m}:${s<10?'0'+s:s}`; if(time <= 0) { clearInterval(tInt); alert("Time Up! +50 XP"); updateXP(50); } }, 1000); };
 
-        // AI LOGIC
+        // 🚀 STABLE AI LOGIC (v11.2 FIX)
         const modal = document.getElementById('aiModal');
         document.getElementById('launchAiBtn').onclick = () => modal.style.display = 'block';
         document.getElementById('closeAi').onclick = () => modal.style.display = 'none';
+        
         document.getElementById('askAiBtn').onclick = async () => {
-            const input = document.getElementById('aiIn').value;
-            if(!input) return;
-            document.getElementById('aiOutput').innerText = "> Decrypting response...";
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-            const res = await model.generateContent(input);
-            document.getElementById('aiOutput').innerText = `> ${res.response.text()}`;
-            updateXP(10);
+            const out = document.getElementById('aiOutput');
+            const inp = document.getElementById('aiIn');
+            const text = inp.value.trim();
+            if(!text) return;
+
+            out.innerText = "> [CORTEX]: Decrypting neural path...";
+            inp.value = ""; 
+
+            try {
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+                const result = await model.generateContent(text);
+                const response = await result.response;
+                out.innerText = `> Cortex: ${response.text()}`;
+                updateXP(15);
+            } catch(e) {
+                out.innerText = `> [SYSTEM_ERROR]: ${e.message}`;
+                console.error(e);
+            }
         };
 
-        // UTILS
         window.copyText = () => { navigator.clipboard.writeText(document.getElementById('aiOutput').innerText); alert("Copied!"); };
         window.speakText = () => { let u = new SpeechSynthesisUtterance(document.getElementById('aiOutput').innerText); u.lang='hi-IN'; window.speechSynthesis.speak(u); };
         setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
-        document.getElementById('waterBtn').onclick = () => { 
-            let c = parseInt(document.getElementById('watCnt').innerText) + 1;
-            document.getElementById('watCnt').innerText = c;
-            updateXP(5);
-        };
-
+        document.getElementById('waterBtn').onclick = () => { let c = parseInt(document.getElementById('watCnt').innerText) + 1; document.getElementById('watCnt').innerText = c; updateXP(5); };
     </script>
 </body>
 </html>
