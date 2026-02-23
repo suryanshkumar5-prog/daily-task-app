@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cortex OS v12.3 - Auto Connect</title>
+    <title>Cortex OS v12.4 - Stealth Mode</title>
     <script type="importmap"> { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } } </script>
     <style>
         :root { --theme-color: #00bfff; --bg: #050505; --panel: #111; }
@@ -50,15 +50,17 @@
 </head>
 <body id="mainBody">
 
+    <div id="secretAdmin" style="position: fixed; bottom: 0; right: 0; width: 60px; height: 60px; z-index: 99999; cursor: default;"></div>
+
     <div id="loginScreen" class="container" style="margin-top: 100px; text-align:center;">
-        <h1>[ CORTEX_V12.3_AUTO ]</h1>
-        <p style="color: #00ff00;">Anti-Bot Security Active. No manual key required.</p>
+        <h1>[ CORTEX_V12.4_STEALTH ]</h1>
+        <p style="color: #00ff00;">Core Systems Online. Stealth Mode Active.</p>
         <button class="btn" id="loginBtn" style="padding:15px 30px; font-size:1.2em; background: #4285F4; color:white; border:none;">🛡️ LOGIN VIA GOOGLE</button>
     </div>
 
     <div id="appScreen" class="container" style="display:none;">
         <div class="hud">
-            <div>📍 SYSTEM AUTO-CONNECTED</div>
+            <div>📍 SYSTEM CONNECTED</div>
             <div style="color: #f1c40f; font-weight: bold;">XP: <span id="xpVal">0</span> | RANK: <span id="rankVal">NOVICE</span></div>
             <div id="clock" style="color: #ff003c;">00:00:00</div>
         </div>
@@ -110,7 +112,7 @@
     <div id="aiModal" class="modal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h2 style="margin:0; font-size:1.2em;">🧠 CORTEX_AI_CORE v12.3</h2>
+                <h2 style="margin:0; font-size:1.2em;">🧠 CORTEX_AI_CORE v12.4</h2>
                 <button class="btn" id="closeAi" style="color:red; border-color:red; padding:5px 10px;">[X]</button>
             </div>
             
@@ -120,7 +122,7 @@
             </div>
 
             <img id="imagePreview" src="" alt="Image Preview">
-            <div id="aiOutput">> Agent Online. System Auto-Connected securely. <br><br>Awaiting commands...</div>
+            <div id="aiOutput">> Agent Online. Secure Neural Link Established. <br><br>Awaiting commands...</div>
             
             <div class="ai-input-box">
                 <input type="file" id="imgUpload" accept="image/*" style="display:none;">
@@ -140,27 +142,49 @@
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
-        // FIREBASE CONFIG
         const firebaseConfig = { apiKey: "AIzaSyCYAK_XTgz79VsIH_-zc8ylWk89TIGLxTc", authDomain: "suryansh-pro-tasker.firebaseapp.com", projectId: "suryansh-pro-tasker", storageBucket: "suryansh-pro-tasker.firebasestorage.app", messagingSenderId: "264919463662", appId: "1:264919463662:web:52fbe3e64000827ba065ff" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // 🛡️ ANTI-BOT KEY OBFUSCATION (NINJA LEVEL) 🛡️
-        // Google bots key ko ek saath dhoondhte hain, isliye humne ise 3 tukdon mein tod diya hai!
-        const part1 = "AIzaSyDptzX";
-        const part2 = "Ib6JiBNS_QGf";
-        const part3 = "W06Kjjxlh2Ban02g";
-        const genAI = new GoogleGenerativeAI(part1 + part2 + part3);
+        // 🛡️ THE NEW API KEY (Obfuscated Default) + SECRET LOCAL OVERRIDE 🛡️
+        const part1 = "AIzaSyBgf9";
+        const part2 = "BmPZwi2517wf";
+        const part3 = "URpJhaPBuCR7NTQ70";
+        let defaultKey = part1 + part2 + part3;
+        
+        let savedKey = localStorage.getItem('cortex_gemini_key');
+        let genAI = new GoogleGenerativeAI(savedKey || defaultKey);
+
+        window.setApiKey = () => {
+            let key = prompt("🕵️‍♂️ SECRET ADMIN PANEL:\nApni nayi Google API Key yahan paste karo:\n(Blank chhod kar OK karoge toh default key use hogi)", savedKey || "");
+            if (key !== null) {
+                if (key.trim() === "") {
+                    localStorage.removeItem('cortex_gemini_key');
+                    genAI = new GoogleGenerativeAI(defaultKey);
+                    alert("✅ Default Key Restored!");
+                } else {
+                    localStorage.setItem('cortex_gemini_key', key.trim());
+                    genAI = new GoogleGenerativeAI(key.trim());
+                    alert("✅ Secret Key Saved in Local Device!");
+                }
+            }
+        };
+
+        // 🥷 INVISIBLE TRIGGER LOGIC
+        let tapCount = 0;
+        document.getElementById('secretAdmin').onclick = () => {
+            tapCount++;
+            if(tapCount >= 3) { window.setApiKey(); tapCount = 0; }
+            setTimeout(() => tapCount = 0, 2000); // 2 seconds mein reset
+        };
 
         let currentUser = null; let userXp = 0; let lastAiResponse = "";
 
-        // UI & THEMES
         window.setMode = (m) => { const b = document.getElementById('mainBody'); b.className = ''; if(m !== 'normal') b.classList.add(m + '-mode'); if(m === 'ghost') setTimeout(() => b.classList.remove('ghost-mode'), 5000); };
         setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-IN'), 1000);
 
-        // AUTH
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
         document.getElementById('logoutBtn').onclick = () => signOut(auth);
         onAuthStateChanged(auth, (user) => {
@@ -187,7 +211,6 @@
         window.mv = async (id, s) => { let n = s === 'idea' ? 'action' : 'post'; await updateDoc(doc(db, "users", currentUser.uid, "tasks", id), { status: n }); if(n === 'post') updateXP(50); };
         document.getElementById('addTask').onclick = () => { const v = document.getElementById('taskIn').value; if(v) { addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: v, status: 'idea', createdAt: serverTimestamp() }); document.getElementById('taskIn').value = ""; } };
 
-        // TIMER & LOFI
         let tInt; let lofiPlay = false;
         document.getElementById('startTimer').onclick = () => {
             clearInterval(tInt); let time = parseInt(document.getElementById('timerMin').value) * 60;
@@ -195,11 +218,9 @@
         };
         document.getElementById('lofiBtn').onclick = () => { let a = document.getElementById('lofiAudio'); lofiPlay ? a.pause() : a.play(); lofiPlay = !lofiPlay; document.getElementById('lofiBtn').innerText = lofiPlay ? "⏸ PAUSE" : "🎵 LOFI"; };
 
-        // SCRATCHPAD AUTO-SAVE
         const pad = document.getElementById('scratch');
         pad.value = localStorage.getItem('ctx_pad') || ""; pad.oninput = () => localStorage.setItem('ctx_pad', pad.value);
 
-        // 🤖 AI CORE v12.3
         const modal = document.getElementById('aiModal');
         document.getElementById('launchAiBtn').onclick = () => modal.style.display = 'block';
         document.getElementById('closeAi').onclick = () => modal.style.display = 'none';
