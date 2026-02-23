@@ -258,7 +258,11 @@
             out.innerText = "> [CORTEX]: Analyzing data...";
             inp.value = "";
             try {
-                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+                // 🔥 NAYA TIME-AWARE AI MODEL 🔥
+                const model = genAI.getGenerativeModel({ 
+                    model: "gemini-2.5-flash",
+                    systemInstruction: "Tumhara naam Cortex AI hai. Tumhare master ka naam Suryansh hai. Aaj ki real date aur time " + new Date().toLocaleString('en-IN') + " hai. Agar user date ya time puche, toh hamesha yahi real date batana."
+                });
                 let res;
                 if(base64Img) {
                     res = await model.generateContent([text || "Analyze this image.", { inlineData: { data: base64Img, mimeType: mimeType } }]);
