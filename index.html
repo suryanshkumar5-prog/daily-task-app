@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cortex OS v12.4 - Stealth Mode</title>
+    <title>Cortex OS v13.0 - Ultimate Auth</title>
     <script type="importmap"> { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } } </script>
     <style>
         :root { --theme-color: #00bfff; --bg: #050505; --panel: #111; }
@@ -25,24 +25,14 @@
         .panel { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; }
         #timeDisplay { font-size: 3em; color: #ff4444; margin: 10px 0; font-weight: bold; text-align: center; }
         
-        /* 🔥 MOBILE UI FIXES FOR MODAL 🔥 */
+        /* UI FIXES */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow: hidden; }
-        .modal-content { 
-            width: 95%; max-width: 900px; height: 90vh; margin: 5vh auto; background: #001a33; 
-            padding: 15px; border: 2px solid var(--theme-color); border-radius: 10px; 
-            box-sizing: border-box; display: flex; flex-direction: column; 
-        }
-        #aiOutput { 
-            background: #000; border: 1px solid var(--theme-color); padding: 15px; 
-            flex-grow: 1; overflow-y: auto; color: #fff; white-space: pre-wrap; 
-            font-size: 1.1em; line-height: 1.5; margin-bottom: 10px; border-radius: 5px; 
-        }
+        .modal-content { width: 95%; max-width: 900px; height: 90vh; margin: 5vh auto; background: #001a33; padding: 15px; border: 2px solid var(--theme-color); border-radius: 10px; box-sizing: border-box; display: flex; flex-direction: column; }
+        #aiOutput { background: #000; border: 1px solid var(--theme-color); padding: 15px; flex-grow: 1; overflow-y: auto; color: #fff; white-space: pre-wrap; font-size: 1.1em; line-height: 1.5; margin-bottom: 10px; border-radius: 5px; }
         .ai-tools { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; justify-content: flex-start; }
+        .ai-input-box { display: flex; gap: 5px; align-items: flex-end; background: #000; padding: 10px; border: 1px solid var(--theme-color); border-radius: 5px; width: 100%; box-sizing: border-box; }
         
-        /* 🔥 MOBILE UI FIXES FOR INPUT BOX 🔥 */
-        .ai-input-box { display: flex; gap: 5px; align-items: center; background: #000; padding: 5px; border: 1px solid var(--theme-color); border-radius: 5px; width: 100%; box-sizing: border-box; }
-        .ai-input-box input { flex: 1; min-width: 0; background: transparent; color: #fff; border: none; padding: 10px; font-family: 'Courier New'; outline: none; font-size: 1em; }
-        
+        input, textarea { flex: 1; min-width: 0; background: transparent; color: #fff; border: 1px solid #333; padding: 10px; font-family: 'Courier New'; outline: none; font-size: 1.1em; border-radius: 5px; margin-bottom: 10px; width: 100%; box-sizing: border-box;}
         #imagePreview { max-height: 100px; display: none; margin-bottom: 10px; border: 1px dashed var(--theme-color); align-self: center; }
         ul { list-style: none; padding: 0; }
         li { background: #0a0a0a; padding: 12px; margin-top: 8px; border-left: 4px solid var(--theme-color); display: flex; justify-content: space-between; align-items: center; border-radius: 3px; }
@@ -52,16 +42,29 @@
 
     <div id="secretAdmin" style="position: fixed; bottom: 0; right: 0; width: 60px; height: 60px; z-index: 99999; cursor: default;"></div>
 
-    <div id="loginScreen" class="container" style="margin-top: 100px; text-align:center;">
-        <h1>[ CORTEX_V12.4_STEALTH ]</h1>
-        <p style="color: #00ff00;">Core Systems Online. Stealth Mode Active.</p>
-        <button class="btn" id="loginBtn" style="padding:15px 30px; font-size:1.2em; background: #4285F4; color:white; border:none;">🛡️ LOGIN VIA GOOGLE</button>
+    <div id="loginScreen" class="container" style="margin-top: 50px; text-align:center; max-width: 400px;">
+        <h1 id="secretTitle">[ CORTEX_V13_LOGIN ]</h1>
+        <p style="color: #00ff00; margin-bottom: 20px;">System Authentication</p>
+        
+        <input type="email" id="emailIn" placeholder="Enter Email Address">
+        <input type="password" id="passIn" placeholder="Enter Password">
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button class="btn" id="emailLoginBtn" style="flex: 1; background: var(--theme-color); color: #000;">🔐 Login</button>
+            <button class="btn" id="emailSignUpBtn" style="flex: 1;">📝 Sign Up</button>
+        </div>
+        
+        <button class="btn" id="forgotPassBtn" style="width: 100%; border-color: #ff4444; color: #ff4444; margin-bottom: 20px;">❓ Forgot Password?</button>
+        
+        <hr style="border-color: #333; margin-bottom: 20px;">
+        
+        <button class="btn" id="googleLoginBtn" style="width:100%; padding:15px; font-size:1.1em; background: #4285F4; color:white; border:none;">🌐 LOGIN VIA GOOGLE</button>
     </div>
 
     <div id="appScreen" class="container" style="display:none;">
         <div class="hud">
-            <div>📍 SYSTEM CONNECTED</div>
-            <div style="color: #f1c40f; font-weight: bold;">XP: <span id="xpVal">0</span> | RANK: <span id="rankVal">NOVICE</span></div>
+            <div>📍 <span id="userEmailDisp">USER</span></div>
+            <div style="color: #f1c40f; font-weight: bold;">XP: <span id="xpVal">0</span></div>
             <div id="clock" style="color: #ff003c;">00:00:00</div>
         </div>
 
@@ -79,19 +82,19 @@
             <div class="panel" style="border-color: #ff4444;">
                 <h3 style="color:#ff4444; margin:0 0 10px 0;">⏲️ FOCUS TIMER</h3>
                 <div style="display:flex; justify-content:center; gap:10px; align-items:center;">
-                    <input type="number" id="timerMin" value="25" style="width:60px; border:1px solid #ff4444; text-align:center;"> Min
+                    <input type="number" id="timerMin" value="25" style="width:60px; border:1px solid #ff4444; text-align:center; padding:5px; margin:0;"> Min
                 </div>
                 <div id="timeDisplay">25:00</div>
                 <div style="display:flex; justify-content:center; gap:10px;">
                     <button class="btn" id="startTimer" style="background:#ff4444; color:#fff;">▶ START</button>
-                    <button class="btn" id="lofiBtn">🎵 LOFI RADIO</button>
+                    <button class="btn" id="lofiBtn">🎵 LOFI</button>
                 </div>
                 <audio id="lofiAudio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"></audio>
             </div>
 
             <div class="panel" style="border-color: #f1c40f;">
-                <h3 style="color:#f1c40f; margin:0 0 10px 0;">📝 AUTO-SAVER SCRATCHPAD</h3>
-                <textarea id="scratch" rows="6" style="width:100%; border:1px solid #f1c40f; box-sizing:border-box;" placeholder="Type ideas here..."></textarea>
+                <h3 style="color:#f1c40f; margin:0 0 10px 0;">📝 SCRATCHPAD</h3>
+                <textarea id="scratch" rows="6" style="width:100%; border:1px solid #f1c40f; box-sizing:border-box; margin:0;" placeholder="Type ideas here..."></textarea>
             </div>
         </div>
 
@@ -99,7 +102,7 @@
             <div class="panel">
                 <h3>💡 IDEAS</h3>
                 <div style="display:flex; gap:5px; border:1px solid #333; padding:5px; border-radius:5px; box-sizing:border-box;">
-                    <input type="text" id="taskIn" placeholder="New task..." style="flex:1; min-width:0;">
+                    <input type="text" id="taskIn" placeholder="New task..." style="flex:1; min-width:0; margin:0; border:none; padding:5px;">
                     <button class="btn" id="addTask">+</button>
                 </div>
                 <ul id="ideaCol"></ul>
@@ -112,32 +115,30 @@
     <div id="aiModal" class="modal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h2 style="margin:0; font-size:1.2em;">🧠 CORTEX_AI_CORE v12.4</h2>
+                <h2 style="margin:0; font-size:1.2em;">🧠 CORTEX_AI_CORE v13.0</h2>
                 <button class="btn" id="closeAi" style="color:red; border-color:red; padding:5px 10px;">[X]</button>
             </div>
             
             <div class="ai-tools">
                 <button class="btn" id="copyBtn">📋 Copy</button>
                 <button class="btn" id="speakBtn">🔊 Speak</button>
-                
                 <button class="btn" style="border-color:#f1c40f; color:#f1c40f;" onclick="let t=document.getElementById('aiIn'); t.value='(APANE CHANNEL KA NAME LIKHE). channel ke naye video ke liye ek viral title, YouTube description (safety warning ke sath), aur trending hashtags likho. Video ka topic hai: [YAHAN APNA EXPERIMENT LIKHO]'; t.style.height=''; t.style.height=t.scrollHeight+'px';">🧪 Alert SEO</button>
-                
-                <button class="btn" style="border-color:#e74c3c; color:#e74c3c;" onclick="let t=document.getElementById('aiIn'); t.value='DaVinci Resolve me is video ko color grade karne ke exact Node setup aur Lift/Gamma/Gain settings batao. Video ka mood kaisa chahiye: [YAHAN MOOD LIKHO, jaise Cinematic, Dark, ya Warm]'; t.style.height=''; t.style.height=t.scrollHeight+'px';">🎨 DaVinci Grade</button>
+                
+                <button class="btn" style="border-color:#e74c3c; color:#e74c3c;" onclick="let t=document.getElementById('aiIn'); t.value='DaVinci Resolve me is video ko color grade karne ke exact Node setup aur Lift/Gamma/Gain settings batao. Video ka mood kaisa chahiye: [YAHAN MOOD LIKHO, jaise Cinematic, Dark, ya Warm]'; t.style.height=''; t.style.height=t.scrollHeight+'px';">🎨 DaVinci Grade</button>
 
-                <button class="btn" style="border-color:#2ecc71; color:#2ecc71;" onclick="let t=document.getElementById('aiIn'); t.value='(APANE VLOGE CHANNEL KA NAME LIKHE). Vlogs channel ke naye vlog ke liye ek engaging title, description, aur viral tags batao. Is vlog me main (daily life/travel/food) cover kar raha hu: [YAHAN APNA VLOG TOPIC LIKHO]'; t.style.height=''; t.style.height=t.scrollHeight+'px';">📹 Vlogs SEO</button>
-                
-                <button class="btn" style="border-color:#9b59b6; color:#9b59b6;" onclick="let t=document.getElementById('aiIn'); t.value='YouTube video ke liye ek viral thumbnail ka detailed image generation prompt likho. Theme: Dark, Mysterious, Challenging. Video topic: [YAHAN TOPIC LIKHO]. Mujhe visual elements, text overlay ideas, aur mood ke baare me batao.'; t.style.height=''; t.style.height=t.scrollHeight+'px';">🖼️ Thumb Gen</button>
-            </div>
-
+                <button class="btn" style="border-color:#2ecc71; color:#2ecc71;" onclick="let t=document.getElementById('aiIn'); t.value='(APANE VLOGE CHANNEL KA NAME LIKHE). Vlogs channel ke naye vlog ke liye ek engaging title, description, aur viral tags batao. Is vlog me main (daily life/travel/food) cover kar raha hu: [YAHAN APNA VLOG TOPIC LIKHO]'; t.style.height=''; t.style.height=t.scrollHeight+'px';">📹 Vlogs SEO</button>
+                
+                <button class="btn" style="border-color:#9b59b6; color:#9b59b6;" onclick="let t=document.getElementById('aiIn'); t.value='YouTube video ke liye ek viral thumbnail ka detailed image generation prompt likho. Theme: Dark, Mysterious, Challenging. Video topic: [YAHAN TOPIC LIKHO]. Mujhe visual elements, text overlay ideas, aur mood ke baare me batao.'; t.style.height=''; t.style.height=t.scrollHeight+'px';">🖼️ Thumb Gen</button>
+            </div>
 
             <img id="imagePreview" src="" alt="Image Preview">
             <div id="aiOutput">> Agent Online. Secure Neural Link Established. <br><br>Awaiting commands...</div>
             
-            <div class="ai-input-box" style="align-items: flex-end; padding: 10px;">
+            <div class="ai-input-box">
                 <input type="file" id="imgUpload" accept="image/*" style="display:none;">
                 <label for="imgUpload" class="btn" style="border:none; font-size:1.5em; cursor:pointer; padding:0 5px; margin-bottom: 8px;" title="Upload Image">📷</label>
                 
-                <textarea id="aiIn" rows="1" placeholder="Type or speak your prompt..." style="flex:1; min-width:0; background: transparent; color: #fff; border: none; padding: 10px; font-family: 'Courier New'; outline: none; font-size: 1.1em; resize: none; overflow-y: auto; max-height: 250px;" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+                <textarea id="aiIn" rows="1" placeholder="Type or speak prompt..." style="margin:0; flex:1; min-width:0; background: transparent; color: #fff; border: none; padding: 5px; font-family: 'Courier New'; outline: none; font-size: 1.1em; resize: none; overflow-y: auto; max-height: 250px;" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
                 
                 <button id="micBtn" class="btn" style="border:none; font-size:1.5em; padding:0 5px; margin-bottom: 8px;" title="Voice Typing">🎤</button>
                 <button class="btn" id="askAiBtn" style="background:var(--theme-color); color:#000; padding:12px 15px; margin-bottom: 2px;" onclick="document.getElementById('aiIn').style.height='auto';">SEND</button>
@@ -146,8 +147,9 @@
     </div>
 
     <script type="module">
+        // 🔥 ULTIMATE FIREBASE AUTH IMPORTS 🔥
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -157,55 +159,78 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // 🛡️ THE NEW API KEY (Obfuscated Default) + SECRET LOCAL OVERRIDE 🛡️
-        const part1 = "AIzaSyBgf9";
-        const part2 = "BmPZwi2517wf";
-        const part3 = "URpJhaPBuCR7NTQ70";
+        // 🛡️ PERSISTENT LOGIN (Baar baar login nahi maangega) 🛡️
+        setPersistence(auth, browserLocalPersistence);
+
+        // API KEY SETUP
+        const part1 = "AIzaSyBgf9"; const part2 = "BmPZwi2517wf"; const part3 = "URpJhaPBuCR7NTQ70";
         let defaultKey = part1 + part2 + part3;
-        
         let savedKey = localStorage.getItem('cortex_gemini_key');
         let genAI = new GoogleGenerativeAI(savedKey || defaultKey);
 
         window.setApiKey = () => {
             let key = prompt("🕵️‍♂️ SECRET ADMIN PANEL:\nApni nayi Google API Key yahan paste karo:\n(Blank chhod kar OK karoge toh default key use hogi)", savedKey || "");
-            if (key !== null) {
-                if (key.trim() === "") {
-                    localStorage.removeItem('cortex_gemini_key');
-                    genAI = new GoogleGenerativeAI(defaultKey);
-                    alert("✅ Default Key Restored!");
-                } else {
-                    localStorage.setItem('cortex_gemini_key', key.trim());
-                    genAI = new GoogleGenerativeAI(key.trim());
-                    alert("✅ Secret Key Saved in Local Device!");
-                }
-            }
+            if (key !== null) { if (key.trim() === "") { localStorage.removeItem('cortex_gemini_key'); genAI = new GoogleGenerativeAI(defaultKey); alert("✅ Default Key Restored!"); } else { localStorage.setItem('cortex_gemini_key', key.trim()); genAI = new GoogleGenerativeAI(key.trim()); alert("✅ Secret Key Saved!"); } }
         };
-
-        // 🥷 INVISIBLE TRIGGER LOGIC
-        let tapCount = 0;
-        document.getElementById('secretAdmin').onclick = () => {
-            tapCount++;
-            if(tapCount >= 3) { window.setApiKey(); tapCount = 0; }
-            setTimeout(() => tapCount = 0, 2000); // 2 seconds mein reset
-        };
+        let tapCount = 0; document.getElementById('secretAdmin').onclick = () => { tapCount++; if(tapCount >= 3) { window.setApiKey(); tapCount = 0; } setTimeout(() => tapCount = 0, 2000); };
 
         let currentUser = null; let userXp = 0; let lastAiResponse = "";
-
         window.setMode = (m) => { const b = document.getElementById('mainBody'); b.className = ''; if(m !== 'normal') b.classList.add(m + '-mode'); if(m === 'ghost') setTimeout(() => b.classList.remove('ghost-mode'), 5000); };
         setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-IN'), 1000);
 
-        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
+        // ================= AUTHENTICATION LOGIC =================
+
+        // 1. Google Login (Fixed for APK using Redirect)
+        document.getElementById('googleLoginBtn').onclick = () => signInWithRedirect(auth, provider);
+        
+        // Handle Google Redirect Result
+        getRedirectResult(auth).catch(e => alert("Google Login Error: " + e.message));
+
+        // 2. Email & Password Login
+        const emailInp = document.getElementById('emailIn');
+        const passInp = document.getElementById('passIn');
+
+        document.getElementById('emailLoginBtn').onclick = () => {
+            if(!emailInp.value || !passInp.value) return alert("Bhai, Email aur Password dono daal!");
+            signInWithEmailAndPassword(auth, emailInp.value, passInp.value)
+                .catch(e => alert("Login Failed! Password galat hai ya account nahi hai.\nError: " + e.message));
+        };
+
+        // 3. Email & Password Signup
+        document.getElementById('emailSignUpBtn').onclick = () => {
+            if(!emailInp.value || !passInp.value) return alert("Email aur Password dono daal signup karne ke liye!");
+            createUserWithEmailAndPassword(auth, emailInp.value, passInp.value)
+                .then(() => alert("🎉 Naya Account Ban Gaya! Ab login ho gaya hai."))
+                .catch(e => alert("Signup Failed!\nError: " + e.message));
+        };
+
+        // 4. Forgot Password (OTP Link)
+        document.getElementById('forgotPassBtn').onclick = () => {
+            if(!emailInp.value) return alert("Bhai, password reset karne ke liye pehle upar wale dabbe mein apna Email toh daal!");
+            sendPasswordResetEmail(auth, emailInp.value)
+                .then(() => alert("✅ Password Reset link teri Email par bhej diya gaya hai. Email check kar!"))
+                .catch(e => alert("Error: " + e.message));
+        };
+
+        // 5. Logout
         document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+        // Check Auth State
         onAuthStateChanged(auth, (user) => {
             if(user) { 
-                currentUser = user; document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appScreen').style.display = 'block'; 
+                currentUser = user; 
+                document.getElementById('loginScreen').style.display = 'none'; 
+                document.getElementById('appScreen').style.display = 'block'; 
+                document.getElementById('userEmailDisp').innerText = user.email ? user.email.split('@')[0] : "AGENT";
                 loadTasks(); 
             } else { 
-                document.getElementById('loginScreen').style.display = 'block'; document.getElementById('appScreen').style.display = 'none'; 
+                document.getElementById('loginScreen').style.display = 'block'; 
+                document.getElementById('appScreen').style.display = 'none'; 
             }
         });
+        // ========================================================
 
-        function updateXP(v) { userXp += v; document.getElementById('xpVal').innerText = userXp; document.getElementById('rankVal').innerText = userXp > 1000 ? "PRO-CREATOR" : userXp > 500 ? "HACKER" : "NOVICE"; }
+        function updateXP(v) { userXp += v; document.getElementById('xpVal').innerText = userXp; }
 
         function loadTasks() {
             onSnapshot(query(collection(db, "users", currentUser.uid, "tasks"), orderBy("createdAt", "asc")), (snap) => {
@@ -221,61 +246,27 @@
         document.getElementById('addTask').onclick = () => { const v = document.getElementById('taskIn').value; if(v) { addDoc(collection(db, "users", currentUser.uid, "tasks"), { text: v, status: 'idea', createdAt: serverTimestamp() }); document.getElementById('taskIn').value = ""; } };
 
         let tInt; let lofiPlay = false;
-        document.getElementById('startTimer').onclick = () => {
-            clearInterval(tInt); let time = parseInt(document.getElementById('timerMin').value) * 60;
-            tInt = setInterval(() => { time--; let m = Math.floor(time/60), s = time%60; document.getElementById('timeDisplay').innerText = `${m}:${s<10?'0'+s:s}`; if(time <= 0) { clearInterval(tInt); alert("Focus Session Complete! +50 XP"); updateXP(50); } }, 1000);
-        };
+        document.getElementById('startTimer').onclick = () => { clearInterval(tInt); let time = parseInt(document.getElementById('timerMin').value) * 60; tInt = setInterval(() => { time--; let m = Math.floor(time/60), s = time%60; document.getElementById('timeDisplay').innerText = `${m}:${s<10?'0'+s:s}`; if(time <= 0) { clearInterval(tInt); alert("Focus Session Complete! +50 XP"); updateXP(50); } }, 1000); };
         document.getElementById('lofiBtn').onclick = () => { let a = document.getElementById('lofiAudio'); lofiPlay ? a.pause() : a.play(); lofiPlay = !lofiPlay; document.getElementById('lofiBtn').innerText = lofiPlay ? "⏸ PAUSE" : "🎵 LOFI"; };
 
-        const pad = document.getElementById('scratch');
-        pad.value = localStorage.getItem('ctx_pad') || ""; pad.oninput = () => localStorage.setItem('ctx_pad', pad.value);
+        const pad = document.getElementById('scratch'); pad.value = localStorage.getItem('ctx_pad') || ""; pad.oninput = () => localStorage.setItem('ctx_pad', pad.value);
 
-        const modal = document.getElementById('aiModal');
-        document.getElementById('launchAiBtn').onclick = () => modal.style.display = 'block';
-        document.getElementById('closeAi').onclick = () => modal.style.display = 'none';
+        const modal = document.getElementById('aiModal'); document.getElementById('launchAiBtn').onclick = () => modal.style.display = 'block'; document.getElementById('closeAi').onclick = () => modal.style.display = 'none';
 
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(SpeechRec) {
-            const rec = new SpeechRec(); rec.lang = 'hi-IN';
-            document.getElementById('micBtn').onclick = () => { rec.start(); document.getElementById('aiIn').placeholder = "Listening..."; document.getElementById('micBtn').style.color = "red"; };
-            rec.onresult = (e) => { document.getElementById('aiIn').value += e.results[0][0].transcript; };
-            rec.onend = () => { document.getElementById('aiIn').placeholder = "Type or speak here..."; document.getElementById('micBtn').style.color = "var(--theme-color)"; };
-        }
+        if(SpeechRec) { const rec = new SpeechRec(); rec.lang = 'hi-IN'; document.getElementById('micBtn').onclick = () => { rec.start(); document.getElementById('aiIn').placeholder = "Listening..."; document.getElementById('micBtn').style.color = "red"; }; rec.onresult = (e) => { document.getElementById('aiIn').value += e.results[0][0].transcript; }; rec.onend = () => { document.getElementById('aiIn').placeholder = "Type or speak prompt..."; document.getElementById('micBtn').style.color = "var(--theme-color)"; }; }
 
         let base64Img = null; let mimeType = null;
-        document.getElementById('imgUpload').onchange = (e) => {
-            let f = e.target.files[0];
-            if(f) {
-                mimeType = f.type; let r = new FileReader();
-                r.onload = (ev) => { base64Img = ev.target.result.split(',')[1]; document.getElementById('imagePreview').src = ev.target.result; document.getElementById('imagePreview').style.display = "block"; };
-                r.readAsDataURL(f);
-            }
-        };
+        document.getElementById('imgUpload').onchange = (e) => { let f = e.target.files[0]; if(f) { mimeType = f.type; let r = new FileReader(); r.onload = (ev) => { base64Img = ev.target.result.split(',')[1]; document.getElementById('imagePreview').src = ev.target.result; document.getElementById('imagePreview').style.display = "block"; }; r.readAsDataURL(f); } };
 
         document.getElementById('askAiBtn').onclick = async () => {
-            const out = document.getElementById('aiOutput'); const inp = document.getElementById('aiIn');
-            let text = inp.value.trim();
-            if(!text && !base64Img) return;
-            
-            out.innerText = "> [CORTEX]: Analyzing data...";
-            inp.value = "";
+            const out = document.getElementById('aiOutput'); const inp = document.getElementById('aiIn'); let text = inp.value.trim(); if(!text && !base64Img) return;
+            out.innerText = "> [CORTEX]: Analyzing data..."; inp.value = "";
             try {
-                // 🔥 NAYA TIME-AWARE AI MODEL 🔥
-                const model = genAI.getGenerativeModel({ 
-                    model: "gemini-2.5-flash",
-                    systemInstruction: "Tumhara naam Cortex AI hai. Tumhare master ka naam Suryansh hai. Aaj ki real date aur time " + new Date().toLocaleString('en-IN') + " hai. Agar user date ya time puche, toh hamesha yahi real date batana."
-                });
-                let res;
-                if(base64Img) {
-                    res = await model.generateContent([text || "Analyze this image.", { inlineData: { data: base64Img, mimeType: mimeType } }]);
-                } else {
-                    res = await model.generateContent(text);
-                }
-                lastAiResponse = await res.response.text();
-                out.innerText = `> ${lastAiResponse}`;
-                
-                base64Img = null; document.getElementById('imagePreview').style.display = "none"; document.getElementById('imgUpload').value = "";
-                updateXP(15);
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: "Tumhara naam Cortex AI hai. Master ka naam Suryansh hai. Aaj ki real date aur time " + new Date().toLocaleString('en-IN') + " hai." });
+                let res; if(base64Img) { res = await model.generateContent([text || "Analyze this image.", { inlineData: { data: base64Img, mimeType: mimeType } }]); } else { res = await model.generateContent(text); }
+                lastAiResponse = await res.response.text(); out.innerText = `> ${lastAiResponse}`;
+                base64Img = null; document.getElementById('imagePreview').style.display = "none"; document.getElementById('imgUpload').value = ""; updateXP(15);
             } catch(e) { out.innerText = `> [SYSTEM_ERROR]: ${e.message}`; }
         };
 
