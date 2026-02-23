@@ -271,7 +271,24 @@
         };
 
         document.getElementById('copyBtn').onclick = () => { navigator.clipboard.writeText(lastAiResponse || document.getElementById('aiOutput').innerText); alert("Copied to clipboard!"); };
-        document.getElementById('speakBtn').onclick = () => { if(lastAiResponse) { let u = new SpeechSynthesisUtterance(lastAiResponse); u.lang='hi-IN'; window.speechSynthesis.speak(u); } };
+        // 🔥 NAYA SPEAK FIX (WITH ANDROID BRIDGE) 🔥
+        document.getElementById('speakBtn').onclick = () => { 
+            if(lastAiResponse) { 
+                // Check karo ki kya hum Asli Android App me hain?
+                if(window.AndroidBridge) {
+                    // Seedha phone ke hardware engine ko text bhejo!
+                    window.AndroidBridge.speakText(lastAiResponse);
+                } else {
+                    // Agar Mac ya kisi aur normal browser me hain toh purana tarika
+                    window.speechSynthesis.cancel(); 
+                    let u = new SpeechSynthesisUtterance(lastAiResponse); 
+                    u.lang = 'hi-IN'; 
+                    window.speechSynthesis.speak(u); 
+                }
+            } else {
+                alert("Bhai, pehle AI se kuch sawal toh pooch!");
+            }
+        };
     </script>
 </body>
 </html>
